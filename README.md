@@ -100,13 +100,13 @@ Parte 2 — TSP combinatorio
 
 | Archivo | Descripción |
 |---------|-------------|
-| [📄 blog_post.md](report/blog_post.md) | Reporte completo con introducción, resultados y discusión |
-| [📐 teoria_01_funciones_gradiente.md](report/teoria_01_funciones_gradiente.md) | Rosenbrock, Rastrigin, GD y búsqueda en línea de Armijo |
-| [📐 teoria_02_heuristicos.md](report/teoria_02_heuristicos.md) | EA (cxBlend), PSO (factor Clerc-Kennedy), DE (escala adaptativa) |
-| [📐 teoria_03_tsp_mexico.md](report/teoria_03_tsp_mexico.md) | TSP, haversine, ACO (feromona), GA (OX crossover) |
-| [🔧 casos_de_uso.md](report/casos_de_uso.md) | Ejemplos de código reutilizables, guía de selección de algoritmo, análisis de complejidad |
-| [💬 discusion.md](report/discusion.md) | Temas de discusión abierta, limitaciones y trabajo futuro |
-| [🤖 ai_prompts_log.md](report/ai_prompts_log.md) | Registro de uso de IA en el desarrollo |
+| [blog_post.md](report/blog_post.md) | Reporte completo con introducción, resultados y discusión |
+| [teoria_01_funciones_gradiente.md](report/teoria_01_funciones_gradiente.md) | Rosenbrock, Rastrigin, GD y búsqueda en línea de Armijo |
+| [teoria_02_heuristicos.md](report/teoria_02_heuristicos.md) | EA (cxBlend), PSO (factor Clerc-Kennedy), DE (escala adaptativa) |
+| [teoria_03_tsp_mexico.md](report/teoria_03_tsp_mexico.md) | TSP, haversine, ACO (feromona), GA (OX crossover) |
+| [casos_de_uso.md](report/casos_de_uso.md) | Ejemplos de código reutilizables, guía de selección de algoritmo, análisis de complejidad |
+| [discusion.md](report/discusion.md) | Temas de discusión abierta, limitaciones y trabajo futuro |
+| [ai_prompts_log.md](report/ai_prompts_log.md) | Registro de uso de IA en el desarrollo |
 
 ---
 
