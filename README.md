@@ -78,6 +78,35 @@ https://docs.google.com/document/d/1eQcFLAz5GOUN9K0MFBEfZ_peTL8IftK03j1gI9b6te0/
 
 ---
 
+## Cómo usar
+
+### Ver el reporte
+Abre el reporte completo (APA 7) en Google Docs:
+https://docs.google.com/document/d/1eQcFLAz5GOUN9K0MFBEfZ_peTL8IftK03j1gI9b6te0/edit?usp=sharing
+
+### Correr los notebooks en Colab
+1. Haz clic en el badge **Open in Colab** de la tabla de arriba.
+2. En Colab: `Entorno de ejecución → Ejecutar todo` (Ctrl+F9).
+3. La primera celda instala las dependencias automáticamente (`!pip install -q deap`).
+4. Los GIFs y resultados se guardan en `outputs/` dentro del notebook.
+
+### Correr localmente
+```bash
+git clone https://github.com/AndresGuido9820/tarea01-optimizacion-heuristica.git
+cd tarea01-optimizacion-heuristica
+pip install numpy scipy matplotlib pillow deap pyswarms pandas
+jupyter notebook notebooks/
+```
+
+### Regenerar el reporte Word
+```bash
+cd report
+python generar_reporte.py
+# Genera: reporte_optimizacion_heuristica.docx
+```
+
+---
+
 ## Dependencias
 
 ```bash
