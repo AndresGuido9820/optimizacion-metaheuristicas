@@ -5,7 +5,7 @@
 **Universidad:** Universidad Nacional de Colombia
 **Autor:** Andres Guido
 **Fecha:** Mayo de 2026
-**Repositorio:** https://github.com/AndresGuido9820/tarea01-optimizacion-heuristica
+**Repositorio:** https://github.com/AndresGuido9820/optimizacion-metaheuristicas
 
 ---
 

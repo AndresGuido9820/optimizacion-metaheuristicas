@@ -92,7 +92,7 @@ https://docs.google.com/document/d/1eQcFLAz5GOUN9K0MFBEfZ_peTL8IftK03j1gI9b6te0/
 
 ### Correr localmente
 ```bash
-git clone https://github.com/AndresGuido9820/tarea01-optimizacion-heuristica.git
+git clone https://github.com/AndresGuido9820/optimizacion-metaheuristicas.git
 cd tarea01-optimizacion-heuristica
 pip install numpy scipy matplotlib pillow deap pyswarms pandas
 jupyter notebook notebooks/
