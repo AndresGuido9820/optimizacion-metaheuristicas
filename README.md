@@ -64,11 +64,11 @@ scripts/
 
 ## Notebooks en Google Colab
 
-| Notebook | Colab |
-|----------|-------|
-| 01 — Funciones de prueba y GD | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/01_funciones_gradiente.ipynb) |
-| 02 — EA, PSO y DE | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/02_heuristicos_comparativa.ipynb) |
-| 03 — TSP México | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/03_tsp_mexico.ipynb) |
+| Notebook | Enlace |
+|----------|--------|
+| 01 — Funciones de prueba y GD | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/01_funciones_gradiente.ipynb) — [abrir](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/01_funciones_gradiente.ipynb) |
+| 02 — EA, PSO y DE | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/02_heuristicos_comparativa.ipynb) — [abrir](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/02_heuristicos_comparativa.ipynb) |
+| 03 — TSP México | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/03_tsp_mexico.ipynb) — [abrir](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/03_tsp_mexico.ipynb) |
 
 ---
 
