@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "Si usas este repositorio, por favor citalo como se indica."
+title: "Optimizacion Metaheuristica: Comparativa sobre Funciones de Prueba y TSP"
+type: software
+authors:
+  - family-names: Guido Montoya
+    given-names: Andres Felipe
+  - family-names: Martinez
+    given-names: Juan Jose
+  - family-names: Lemus
+    given-names: Andres
+year: 2026
+license: MIT
+repository-code: "https://github.com/AndresGuido9820/optimizacion-metaheuristicas"
+keywords:
+  - metaheuristicas
+  - optimizacion
+  - evolucion diferencial
+  - particle swarm optimization
+  - ant colony optimization
+  - traveling salesman problem
