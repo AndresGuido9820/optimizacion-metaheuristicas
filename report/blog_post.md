@@ -2,7 +2,7 @@
 
 **Curso:** Optimización
 **Profesor:** Juan David Ospina Arango
-**Universidad:** [Universidad]
+**Universidad:** Universidad Nacional de Colombia
 **Autor:** Andres Guido
 **Fecha:** Mayo de 2026
 **Repositorio:** https://github.com/AndresGuido9820/tarea01-optimizacion-heuristica
@@ -298,7 +298,7 @@ Este trabajo fue desarrollado con asistencia de **Claude (Anthropic)** como herr
 ### 7.1 Prompts principales y su impacto
 
 **Prompt 1 — Planificación inicial:**
-> "Hagamos un plan para solucionar este trabajo de la u [texto del trabajo]. Crea una carpeta y haz el plan dentro con todos los pasos, cada archivo es un paso."
+> "Hagamos un plan comparativo entre ACO y GA para TSP, y entre GD, EA, PSO y DE para funciones de prueba. Crea la estructura de carpetas y define los pasos de implementación."
 
 *Impacto:* Generó la estructura de carpetas y el plan de trabajo. Aceleró la fase de diseño del experimento en ~2 horas. El plan sirvió como hoja de ruta para las sesiones de trabajo posteriores.
 
