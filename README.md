@@ -4,6 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-orange?logo=jupyter)](https://jupyter.org/)
+[![Validacion](https://github.com/AndresGuido9820/optimizacion-metaheuristicas/actions/workflows/validacion.yml/badge.svg)](https://github.com/AndresGuido9820/optimizacion-metaheuristicas/actions/workflows/validacion.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb)
 
