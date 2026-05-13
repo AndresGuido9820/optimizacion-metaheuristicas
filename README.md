@@ -46,8 +46,8 @@ Minimización del costo de viaje (combustible + peajes + tiempo del vendedor) co
 
 ```
 notebooks/
-  01_gradiente_EA.ipynb      # GD y EA sobre Rosenbrock / Rastrigin
-  02_PSO_DE.ipynb            # PSO y DE sobre Rosenbrock / Rastrigin
+  01_funciones_gradiente.ipynb   # GD sobre Rosenbrock / Rastrigin
+  02_heuristicos_comparativa.ipynb  # EA, PSO y DE — comparativa
   03_tsp_mexico.ipynb        # ACO y GA sobre las 32 capitales de México
   outputs/                   # Resultados JSON y GIFs de convergencia
 
@@ -66,8 +66,8 @@ scripts/
 
 | Notebook | Colab |
 |----------|-------|
-| 01 — GD y EA | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/01_gradiente_EA.ipynb) |
-| 02 — PSO y DE | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/02_PSO_DE.ipynb) |
+| 01 — Funciones de prueba y GD | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/01_funciones_gradiente.ipynb) |
+| 02 — EA, PSO y DE | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/02_heuristicos_comparativa.ipynb) |
 | 03 — TSP México | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AndresGuido9820/tarea01-optimizacion-heuristica/blob/main/notebooks/03_tsp_mexico.ipynb) |
 
 ---
