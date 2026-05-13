@@ -98,13 +98,6 @@ pip install numpy scipy matplotlib pillow deap pyswarms pandas
 jupyter notebook notebooks/
 ```
 
-### Regenerar el reporte Word
-```bash
-cd report
-python generar_reporte.py
-# Genera: reporte_optimizacion_heuristica.docx
-```
-
 ---
 
 ## Dependencias
