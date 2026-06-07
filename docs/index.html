@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Optimizacion Metaheuristica - Universidad Nacional de Colombia</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+
+  <style>
+    :root {
+      --primary: #1a3a5c;
+      --accent:  #0d6efd;
+      --success: #198754;
+      --light-bg: #f8f9fa;
+      --border: #dee2e6;
+    }
+    body { font-family: 'Inter', sans-serif; color: #212529; scroll-behavior: smooth; }
+
+    .hero {
+      background: linear-gradient(135deg, #0d1b2a 0%, #1a3a5c 60%, #0d6efd 100%);
+      color: white; padding: 5rem 0 4rem;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 700; line-height: 1.3; }
+    .hero .subtitle { font-size: 1.05rem; opacity: 0.85; }
+    .badge-pill {
+      background: rgba(255,255,255,0.15); border-radius: 20px;
+      padding: 0.35rem 0.9rem; font-size: 0.85rem; display: inline-block; margin: 0.2rem;
+    }
+
+    .sticky-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0.5rem 0;
+    }
+    .sticky-nav a { color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.9rem; margin: 0 0.7rem; }
+    .sticky-nav a:hover { color: var(--accent); }
+
+    .section { padding: 4rem 0; }
+    .section-alt { background: var(--light-bg); }
+    h2.section-title { color: var(--primary); font-weight: 700; border-left: 4px solid var(--accent); padding-left: 0.8rem; margin-bottom: 1.5rem; }
+    h3.subsection { color: #343a40; font-weight: 600; margin-top: 2rem; margin-bottom: 0.8rem; }
+
+    .metric-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); text-align: center; height: 100%; }
+    .metric-card .metric-val { font-size: 2rem; font-weight: 700; color: var(--accent); }
+    .metric-card .metric-label { font-size: 0.85rem; color: #6c757d; margin-top: 0.3rem; }
+    .metric-card .metric-sub { font-size: 0.95rem; font-weight: 500; color: #343a40; margin-top: 0.2rem; }
+
+    .result-best { background: #d1e7dd; color: #0f5132; border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.8rem; font-weight: 600; }
+    .result-bad  { background: #f8d7da; color: #842029; border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.8rem; font-weight: 600; }
+
+    .fig-container { text-align: center; margin: 2rem 0; }
+    .fig-container img { max-width: 100%; border-radius: 8px; box-shadow: 0 2px 16px rgba(0,0,0,0.10); }
+    .fig-caption { font-size: 0.87rem; color: #6c757d; margin-top: 0.7rem; font-style: italic; max-width: 720px; margin-left: auto; margin-right: auto; }
+
+    code { font-family: 'JetBrains Mono', monospace; background: #f1f3f5; padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.9em; }
+
+    .result-table th { background: var(--primary); color: white; font-weight: 600; }
+    .result-table tbody tr:hover { background: #e8f4ff; }
+
+    .algo-tag { display: inline-block; background: var(--accent); color: white; border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.78rem; font-weight: 600; margin-right: 0.3rem; }
+    .algo-tag.green  { background: var(--success); }
+    .algo-tag.orange { background: #fd7e14; }
+    .algo-tag.dark   { background: #343a40; }
+
+    .fn-card { border-left: 3px solid var(--accent); padding: 0.7rem 1rem; margin-bottom: 1rem; background: white; border-radius: 0 8px 8px 0; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+    .fn-card h5 { margin: 0 0 0.3rem; font-weight: 600; color: var(--primary); }
+    .fn-card .fn-type { font-size: 0.8rem; color: #6c757d; }
+
+    footer { background: var(--primary); color: rgba(255,255,255,0.8); padding: 2.5rem 0; font-size: 0.9rem; }
+    footer a { color: rgba(255,255,255,0.9); }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1>Optimizacion Heuristica: Comparativa de Metaheuristicas sobre Funciones de Prueba y el TSP de Francia</h1>
+        <p class="subtitle mt-3">
+          Comparativa experimental de GD, EA, PSO y DE sobre 6 funciones clasicas.<br>
+          TSP para los 96 departamentos de la Francia metropolitana con ACO y GA.
+        </p>
+        <div class="mt-4">
+          <span class="badge-pill">Universidad Nacional de Colombia</span>
+          <span class="badge-pill">Junio 2026</span>
+          <span class="badge-pill">900 experimentos heuristicos</span>
+          <span class="badge-pill">60 corridas TSP - 96 ciudades</span>
+        </div>
+        <div class="mt-3">
+          <strong>Autores:</strong> Andres F. Guido Montoya &middot; Juan Jose Martinez &middot; Andres Lemus
+        </div>
+        <div class="mt-3">
+          <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas" class="btn btn-light btn-sm me-2" target="_blank">
+            Repositorio GitHub
+          </a>
+          <a href="report/reporte_trabajo1.docx" class="btn btn-outline-light btn-sm">
+            Descargar Reporte (.docx)
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="metric-card" style="background:rgba(255,255,255,0.1);color:white;">
+              <div class="metric-val" style="color:#7dd3fc;">6</div>
+              <div class="metric-label" style="color:rgba(255,255,255,0.7);">Funciones de prueba</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="metric-card" style="background:rgba(255,255,255,0.1);color:white;">
+              <div class="metric-val" style="color:#86efac;">100%</div>
+              <div class="metric-label" style="color:rgba(255,255,255,0.7);">DE en Rosenbrock</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="metric-card" style="background:rgba(255,255,255,0.1);color:white;">
+              <div class="metric-val" style="color:#fca5a5;">3 285</div>
+              <div class="metric-label" style="color:rgba(255,255,255,0.7);">Mejor ACO (EUR)</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="metric-card" style="background:rgba(255,255,255,0.1);color:white;">
+              <div class="metric-val" style="color:#fdba74;">96</div>
+              <div class="metric-label" style="color:rgba(255,255,255,0.7);">Departamentos Francia</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <div class="container d-flex flex-wrap gap-1">
+    <a href="#resumen">Resumen</a>
+    <a href="#funciones">Funciones</a>
+    <a href="#metodologia">Metodologia</a>
+    <a href="#resultados-gd">GD</a>
+    <a href="#resultados-heur">Heuristicos</a>
+    <a href="#resultados-tsp">TSP Francia</a>
+    <a href="#discusion">Discusion</a>
+    <a href="#codigo">Codigo</a>
+  </div>
+</nav>
+
+<!-- RESUMEN -->
+<section class="section" id="resumen">
+  <div class="container">
+    <h2 class="section-title">Resumen</h2>
+    <div class="row">
+      <div class="col-lg-8">
+        <p>
+          Este trabajo presenta una comparativa experimental de cuatro algoritmos de optimizacion:
+          <strong>descenso por gradiente (GD)</strong>, <strong>algoritmos evolutivos (EA)</strong>,
+          <strong>optimizacion por enjambre de particulas (PSO)</strong> y
+          <strong>evolucion diferencial (DE)</strong>, aplicados a seis funciones de prueba
+          clasicas en dimensiones 2D y 3D.
+        </p>
+        <p>
+          Para GD se realizan $n \in \{100, 500, 1000\}$ repeticiones con condicion inicial aleatoria,
+          registrando histogramas del valor final $f^*$.
+          Para los metodos heuristicos se realizan <strong>30 corridas independientes</strong>
+          por configuracion (900 experimentos en total).
+        </p>
+        <p>
+          En la Parte 2 se resuelve el Problema del Agente Viajero (TSP) para las
+          <strong>96 prefecturas de los departamentos de la Francia metropolitana</strong>
+          usando colonias de hormigas (ACO) y algoritmos geneticos (GA), con un modelo de costo
+          economico que incorpora combustible, peajes y tiempo del vendedor en EUR.
+        </p>
+        <p><strong>Resultado clave:</strong>
+          DE domina en funciones continuas (100% exito en Rosenbrock con solo ~3 945 evaluaciones
+          vs 50 100 de EA). ACO supera consistentemente a GA en el TSP:
+          3 355 EUR vs 4 553 EUR en promedio, con CV = 1.26% vs 4.87%.
+        </p>
+      </div>
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h6 class="fw-bold text-primary mb-3">Resultados destacados</h6>
+            <table class="table table-sm table-borderless mb-0">
+              <tbody>
+                <tr><td>Mejor heuristico continuo</td><td><strong>DE</strong></td></tr>
+                <tr><td>TSP - ACO media</td><td><strong>3 355 EUR</strong></td></tr>
+                <tr><td>TSP - GA media</td><td><strong>4 553 EUR</strong></td></tr>
+                <tr><td>DE Rosenbrock exito</td><td><strong>100%</strong></td></tr>
+                <tr><td>DE evals (Rosen 2D)</td><td><strong>3 945</strong></td></tr>
+                <tr><td>Mejor ruta ACO</td><td><strong>3 285 EUR</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUNCIONES -->
+<section class="section section-alt" id="funciones">
+  <div class="container">
+    <h2 class="section-title">Funciones de Prueba</h2>
+    <p class="mb-4">Seis funciones clasicas que cubren distintos tipos de dificultad: unimodal con valle estrecho, multimodal, minimo global descentrado, minimos locales uniformes y paisaje muy irregular.</p>
+
+    <div class="fig-container mb-5">
+      <img src="assets/figures/contour_plots.png" alt="Contour plots de las 6 funciones de prueba" />
+      <p class="fig-caption">Figura 1. Contour plots 2D de las seis funciones de prueba (escala log del valor normalizado). Rastrigin muestra el patron multimodal regular, Schwefel ubica su minimo en la esquina del dominio, Griewank tiene minimos locales distribuidos uniformemente.</p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4">
+        <div class="fn-card">
+          <h5>Rosenbrock</h5>
+          <div class="fn-type">Unimodal &middot; 2D y 3D &middot; $[-5, 5]^n$</div>
+          <div class="mt-2">$$f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[100(x_{i+1}-x_i^2)^2 + (1-x_i)^2\right]$$</div>
+          <small>Optimo: $f(\mathbf{1}) = 0$. Valle parabolico estrecho y curvado.</small>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="fn-card" style="border-left-color:#fd7e14;">
+          <h5>Rastrigin</h5>
+          <div class="fn-type">Multimodal &middot; 2D y 3D &middot; $[-5, 5]^n$</div>
+          <div class="mt-2">$$f(\mathbf{x}) = 10n + \sum_{i=1}^{n}\left[x_i^2 - 10\cos(2\pi x_i)\right]$$</div>
+          <small>Optimo: $f(\mathbf{0}) = 0$. Aprox. $10^n$ minimos locales.</small>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="fn-card" style="border-left-color:#198754;">
+          <h5>Schwefel</h5>
+          <div class="fn-type">Multimodal &middot; 2D y 3D &middot; $[-500, 500]^n$</div>
+          <div class="mt-2">$$f(\mathbf{x}) = 418.9829\,n - \sum_{i=1}^{n} x_i\sin\!\left(\sqrt{|x_i|}\right)$$</div>
+          <small>Optimo: $f(420.97,\ldots) \approx 0$. Minimo lejos del centro del dominio.</small>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="fn-card" style="border-left-color:#6f42c1;">
+          <h5>Griewank</h5>
+          <div class="fn-type">Multimodal &middot; 2D y 3D &middot; $[-600, 600]^n$</div>
+          <div class="mt-2">$$f(\mathbf{x}) = 1 + \frac{\sum x_i^2}{4000} - \prod\cos\!\left(\frac{x_i}{\sqrt{i}}\right)$$</div>
+          <small>Optimo: $f(\mathbf{0}) = 0$. Minimos locales uniformemente distribuidos.</small>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="fn-card" style="border-left-color:#dc3545;">
+          <h5>Goldstein-Price</h5>
+          <div class="fn-type">Multimodal &middot; solo 2D &middot; $[-2, 2]^2$</div>
+          <div class="mt-2 small">$$f(\mathbf{x}) = [1 + (x_1+x_2+1)^2 P_1]\cdot[30 + (2x_1-3x_2)^2 P_2]$$</div>
+          <small>Optimo: $f(0,-1) = 3$. Paisaje muy irregular.</small>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="fn-card" style="border-left-color:#20c997;">
+          <h5>Camel 6-hump</h5>
+          <div class="fn-type">Bimodal &middot; solo 2D &middot; $[-3,3]\times[-2,2]$</div>
+          <div class="mt-2 small">$$f(x_1,x_2) = \left(4-2.1x_1^2+\frac{x_1^4}{3}\right)x_1^2 + x_1x_2 + (-4+4x_2^2)x_2^2$$</div>
+          <small>Optimo: $f^* \approx -1.0316$. Dos minimos globales simetricos.</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="fig-container mt-5">
+      <img src="assets/figures/surfaces_3d.png" alt="Superficies 3D de las funciones nD" />
+      <p class="fig-caption">Figura 2. Superficies 3D de las cuatro funciones validas en dimension variable (Rosenbrock, Rastrigin, Schwefel, Griewank). La escala de cada funcion es muy distinta: Schwefel tiene un rango de $[-500, 500]$ mientras que Rosenbrock en $[-2, 2]^2$ alcanza valores de hasta $\approx 3\,600$.</p>
+    </div>
+  </div>
+</section>
+
+<!-- METODOLOGIA -->
+<section class="section" id="metodologia">
+  <div class="container">
+    <h2 class="section-title">Metodologia</h2>
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <h3 class="subsection">Parte 1 - Funciones continuas</h3>
+
+        <h5 class="mt-3">Descenso por Gradiente con Armijo</h5>
+        <p>Gradiente numerico con diferencias centradas y busqueda en linea con retroceso (backtracking) siguiendo la condicion de Armijo. Se realizan $n \in \{100, 500, 1000\}$ corridas con condicion inicial aleatoria.</p>
+
+        <h5 class="mt-3">Algoritmo Evolutivo (EA) - DEAP</h5>
+        <p><code>cxBlend(alpha=0.5)</code>, <code>mutGaussian(sigma=0.5)</code>, seleccion por torneo. 100 individuos x 500 generaciones = <strong>50 100 evaluaciones</strong>.</p>
+
+        <h5 class="mt-3">PSO - pyswarms</h5>
+        <p>Factor de constriccion de Clerc-Kennedy: $w = 0.729$, $c_1 = c_2 = 2.05$. 50 particulas x 500 iteraciones = <strong>25 000 evaluaciones</strong>.</p>
+
+        <h5 class="mt-3">Evolucion Diferencial (DE) - scipy</h5>
+        <p>Estrategia <code>best1bin</code>, $F \in [0.5, 1.0]$, $CR = 0.7$, <code>popsize=15</code>. Evaluaciones adaptativas segun la dificultad.</p>
+      </div>
+      <div class="col-lg-6">
+        <h3 class="subsection">Parte 2 - TSP Francia</h3>
+        <p>96 prefecturas de los departamentos de la Francia metropolitana. Distancias con formula de Haversine sobre WGS84.</p>
+
+        <div class="card border-0 bg-light mb-3">
+          <div class="card-body">
+            <h6 class="fw-bold">Modelo de costo (Renault Clio 1.0 TCe)</h6>
+            <table class="table table-sm table-borderless mb-0">
+              <tr><td>Combustible SP95 (1.75 EUR/L x 5.5 L/100km)</td><td class="text-end">0.0963 EUR/km</td></tr>
+              <tr><td>Peajes (autopistas ASFA 2024)</td><td class="text-end">0.0800 EUR/km</td></tr>
+              <tr><td>Tiempo conductor (SMIC neto, 90 km/h)</td><td class="text-end">0.2778 EUR/km</td></tr>
+              <tr class="fw-bold table-primary"><td>Total</td><td class="text-end">0.4540 EUR/km</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <h5 class="mt-3">ACO - Colonias de Hormigas</h5>
+        <p>50 hormigas x 300 iteraciones. $\alpha=1$, $\beta=3$, $\rho=0.1$, $Q=100$. 30 corridas independientes.</p>
+
+        <h5 class="mt-3">GA - Algoritmo Genetico con OX crossover</h5>
+        <p>200 individuos x 500 generaciones. OX crossover (Davis 1985) preserva la estructura de permutacion. 30 corridas independientes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTADOS GD -->
+<section class="section section-alt" id="resultados-gd">
+  <div class="container">
+    <h2 class="section-title">Resultados - Parte 1A: Descenso por Gradiente</h2>
+    <p>Con $n = 1\,000$ condiciones iniciales aleatorias se estiman distribuciones empiricas de $f^*$. Los histogramas revelan la <strong>bimodalidad</strong> de Rosenbrock y la <strong>multimodalidad discreta</strong> de Rastrigin.</p>
+
+    <div class="row g-4 mt-2">
+      <div class="col-md-4">
+        <div class="metric-card">
+          <div class="metric-val">~80%</div>
+          <div class="metric-sub">Rosenbrock 2D</div>
+          <div class="metric-label">tasa de convergencia al optimo global</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="metric-card">
+          <div class="metric-val">~20%</div>
+          <div class="metric-sub">Rastrigin 2D</div>
+          <div class="metric-label">tasa de convergencia al optimo (altamente multimodal)</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="metric-card">
+          <div class="metric-val">~2 000</div>
+          <div class="metric-sub">Evaluaciones GD</div>
+          <div class="metric-label">cuando converge en Rosenbrock 2D - el mas eficiente</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info mt-4">
+      <strong>Nota:</strong> Los histogramas del GD estan disponibles en el
+      <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb" target="_blank">Notebook 01</a>.
+      GD es el metodo mas eficiente <em>cuando converge</em>, pero su tasa de exito cae drasticamente en funciones multimodales.
+    </div>
+  </div>
+</section>
+
+<!-- RESULTADOS HEURISTICOS -->
+<section class="section" id="resultados-heur">
+  <div class="container">
+    <h2 class="section-title">Resultados - Parte 1B: Comparativa EA / PSO / DE</h2>
+    <p>30 corridas independientes por metodo x funcion x dimension. <strong>900 experimentos reales</strong>.</p>
+
+    <div class="fig-container">
+      <img src="assets/figures/comparison_bars.png" alt="Tasa de exito por metodo y funcion" />
+      <p class="fig-caption">Figura 3. Tasa de exito (%) de EA, PSO y DE sobre seis configuraciones (funcion x dimension). DE domina en Rosenbrock 2D y 3D (100%); PSO cae a 10% en Rosenbrock 3D. EA es competitivo en Rastrigin pero falla en el valle estrecho de Rosenbrock.</p>
+    </div>
+
+    <div class="fig-container mt-4">
+      <img src="assets/figures/evals_comparison.png" alt="Numero de evaluaciones por metodo" />
+      <p class="fig-caption">Figura 4. Numero de evaluaciones promedio de $f$ en escala logaritmica. DE usa entre 3x y 12x menos evaluaciones que EA y PSO para alcanzar el mismo umbral de exito.</p>
+    </div>
+
+    <h3 class="subsection mt-5">Tabla de resultados</h3>
+    <div class="table-responsive">
+      <table class="table table-bordered result-table">
+        <thead>
+          <tr>
+            <th>Metodo</th><th>Funcion</th><th>Dim</th>
+            <th>$f^*$ media</th><th>$f^*$ mejor</th>
+            <th>Exito (%)</th><th>Evals prom.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="table-light">
+            <td><span class="algo-tag dark">EA</span></td><td>Rosenbrock</td><td>2D</td>
+            <td>1.01e-02</td><td>1.65e-08</td>
+            <td><span class="result-bad">13%</span></td><td>50 100</td>
+          </tr>
+          <tr>
+            <td><span class="algo-tag orange">PSO</span></td><td>Rosenbrock</td><td>2D</td>
+            <td>1.58e-07</td><td>1.89e-10</td>
+            <td><span class="result-best">100%</span></td><td>25 000</td>
+          </tr>
+          <tr class="table-light">
+            <td><span class="algo-tag green">DE</span></td><td>Rosenbrock</td><td>2D</td>
+            <td>4.98e-30</td><td>4.98e-30</td>
+            <td><span class="result-best">100%</span></td><td><strong>3 945</strong></td>
+          </tr>
+          <tr>
+            <td><span class="algo-tag dark">EA</span></td><td>Rosenbrock</td><td>3D</td>
+            <td>4.27e-01</td><td>3.77e-04</td>
+            <td><span class="result-bad">0%</span></td><td>50 100</td>
+          </tr>
+          <tr class="table-light">
+            <td><span class="algo-tag orange">PSO</span></td><td>Rosenbrock</td><td>3D</td>
+            <td>4.90e-02</td><td>6.10e-06</td>
+            <td><span class="result-bad">10%</span></td><td>25 000</td>
+          </tr>
+          <tr>
+            <td><span class="algo-tag green">DE</span></td><td>Rosenbrock</td><td>3D</td>
+            <td>9.96e-30</td><td>9.96e-30</td>
+            <td><span class="result-best">100%</span></td><td><strong>11 401</strong></td>
+          </tr>
+          <tr class="table-light">
+            <td><span class="algo-tag dark">EA</span></td><td>Rastrigin</td><td>2D</td>
+            <td>0.00</td><td>0.00</td>
+            <td><span class="result-best">100%</span></td><td>50 100</td>
+          </tr>
+          <tr>
+            <td><span class="algo-tag orange">PSO</span></td><td>Rastrigin</td><td>2D</td>
+            <td>0.00</td><td>0.00</td>
+            <td><span class="result-best">100%</span></td><td>25 000</td>
+          </tr>
+          <tr class="table-light">
+            <td><span class="algo-tag green">DE</span></td><td>Rastrigin</td><td>2D</td>
+            <td>0.00</td><td>0.00</td>
+            <td><span class="result-best">100%</span></td><td><strong>2 007</strong></td>
+          </tr>
+          <tr>
+            <td><span class="algo-tag dark">EA</span></td><td>Rastrigin</td><td>3D</td>
+            <td>1.40e-04</td><td>0.00</td>
+            <td><span class="result-best">100%</span></td><td>50 100</td>
+          </tr>
+          <tr class="table-light">
+            <td><span class="algo-tag orange">PSO</span></td><td>Rastrigin</td><td>3D</td>
+            <td>7.09e-07</td><td>0.00</td>
+            <td><span class="result-best">100%</span></td><td>25 000</td>
+          </tr>
+          <tr>
+            <td><span class="algo-tag green">DE</span></td><td>Rastrigin</td><td>3D</td>
+            <td>6.63e-02</td><td>0.00</td>
+            <td><span class="result-best">100%</span></td><td><strong>4 482</strong></td>
+          </tr>
+          <tr class="table-light">
+            <td><span class="algo-tag green">DE</span></td><td>Goldstein-Price</td><td>2D</td>
+            <td>3.000</td><td>3.000</td>
+            <td><span class="result-best">100%</span></td><td><strong>965</strong></td>
+          </tr>
+          <tr>
+            <td><span class="algo-tag green">DE</span></td><td>Camel 6-hump</td><td>2D</td>
+            <td>-1.0316</td><td>-1.0316</td>
+            <td><span class="result-best">100%</span></td><td><strong>869</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-warning mt-3">
+      <strong>Nota sobre EA y Schwefel:</strong> El operador <code>mutGaussian</code> de DEAP no restringe los individuos al dominio $[-500, 500]^n$. Fuera del dominio, Schwefel puede devolver valores muy negativos. Los resultados de EA en Schwefel reflejan exploracion fuera del dominio, no convergencia al minimo global real.
+    </div>
+  </div>
+</section>
+
+<!-- RESULTADOS TSP -->
+<section class="section section-alt" id="resultados-tsp">
+  <div class="container">
+    <h2 class="section-title">Resultados - Parte 2: TSP Francia (96 departamentos)</h2>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="metric-card">
+          <div class="metric-val text-primary">3 355 EUR</div>
+          <div class="metric-sub">ACO - Media</div>
+          <div class="metric-label">std = 42 &middot; CV = 1.26%</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-card">
+          <div class="metric-val" style="color:#198754;">3 285 EUR</div>
+          <div class="metric-sub">ACO - Mejor</div>
+          <div class="metric-label">Mejor solucion en 30 corridas</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-card">
+          <div class="metric-val text-warning">4 553 EUR</div>
+          <div class="metric-sub">GA - Media</div>
+          <div class="metric-label">std = 222 &middot; CV = 4.87%</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-card">
+          <div class="metric-val" style="color:#fd7e14;">4 092 EUR</div>
+          <div class="metric-sub">GA - Mejor</div>
+          <div class="metric-label">Mejor solucion GA en 30 corridas</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive mb-4">
+      <table class="table table-bordered result-table">
+        <thead>
+          <tr>
+            <th>Metodo</th><th>Media (EUR)</th><th>Std (EUR)</th>
+            <th>Mejor (EUR)</th><th>Peor (EUR)</th><th>CV (%)</th><th>Tiempo (s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="table-light">
+            <td><span class="algo-tag">ACO</span></td>
+            <td><strong>3 355</strong></td><td>42</td>
+            <td><strong>3 285</strong></td><td>3 446</td>
+            <td><strong>1.26</strong></td><td>831</td>
+          </tr>
+          <tr>
+            <td><span class="algo-tag orange">GA</span></td>
+            <td>4 553</td><td>222</td>
+            <td>4 092</td><td>5 120</td>
+            <td>4.87</td><td>160</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-muted small mb-4">30 corridas independientes. Modelo de costo: 0.454 EUR/km (combustible + peajes + tiempo vendedor).</p>
+
+    <div class="fig-container">
+      <img src="assets/figures/mejor_ruta_comparativa.png" alt="Mejor ruta ACO vs GA sobre el mapa de Francia" />
+      <p class="fig-caption">Figura 5. Mejor ruta encontrada por ACO (3 285 EUR) y GA (4 092 EUR) sobre las 96 prefecturas de la Francia metropolitana. La ruta ACO recorre el perimetro del pais de forma mas geograficamente coherente antes de abordar el interior.</p>
+    </div>
+
+    <div class="fig-container mt-4">
+      <img src="assets/figures/convergencia_aco_ga.png" alt="Curvas de convergencia ACO vs GA" />
+      <p class="fig-caption">Figura 6. Curvas de convergencia del mejor costo encontrado por ACO y GA. ACO converge de forma suave y monotonica; GA muestra saltos abruptos tipicos del OX crossover. ACO alcanza soluciones ~26% mas economicas en promedio.</p>
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="fw-bold text-primary">Por que ACO gana en el TSP</h6>
+            <ul class="small mb-0">
+              <li>La matriz de feromona $\tau \in \mathbb{R}^{96\times96}$ acumula memoria colectiva sobre la calidad de los arcos</li>
+              <li>$\beta=3$ da mucho peso a la heuristica $\eta_{ij} = 1/d_{ij}$: preferencia natural por arcos cortos</li>
+              <li>CV = 1.26% indica alta consistencia entre las 30 corridas</li>
+              <li>La naturaleza incremental (ciudad a ciudad) se adapta al TSP naturalmente</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="fw-bold text-warning">Limitaciones de GA en el TSP</h6>
+            <ul class="small mb-0">
+              <li>CV = 4.87%: mayor varianza - el OX crossover produce hijos de muy distinta calidad</li>
+              <li>La recombinacion de permutaciones no preserva la estructura geografica local</li>
+              <li>GA es 5x mas rapido (160s vs 831s) - acepta mas varianza a cambio de velocidad</li>
+              <li>Con mas generaciones podria acercarse a ACO</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCUSION -->
+<section class="section" id="discusion">
+  <div class="container">
+    <h2 class="section-title">Discusion</h2>
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="fw-bold text-primary">Por que DE domina en funciones continuas</h5>
+            <p>El operador de mutacion $\mathbf{v} = \mathbf{x}_{r1} + F(\mathbf{x}_{r2} - \mathbf{x}_{r3})$ escala adaptativamente: cuando la poblacion converge, $F \cdot (\mathbf{x}_{r2} - \mathbf{x}_{r3})$ se vuelve pequeno automaticamente, permitiendo refinamiento fino sin ajuste manual del tamano de paso.</p>
+            <p class="mb-0">EA falla en Rosenbrock porque <code>cxBlend</code> genera hijos fuera del valle. PSO falla en 3D porque las velocidades no se adaptan a la geometria local.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="fw-bold text-primary">Teorema de No Free Lunch</h5>
+            <p>DE domina aqui, pero Wolpert &amp; Macready (1997) demuestran que ningun algoritmo es universalmente mejor. DE fallaria en:</p>
+            <ul class="mb-0">
+              <li><strong>Espacios discretos:</strong> opera sobre vectores reales</li>
+              <li><strong>Presupuesto muy limitado (&le;100 evals):</strong> Optimizacion Bayesiana lo supera</li>
+              <li><strong>Restricciones duras:</strong> sin manejo nativo</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mt-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="fw-bold text-primary">Feromona vs genes: dos modelos de memoria</h5>
+            <table class="table table-sm table-borderless mb-0">
+              <thead><tr><th></th><th>ACO</th><th>GA</th></tr></thead>
+              <tbody>
+                <tr><td>Memoria</td><td>Explicita: $\tau_{ij}$</td><td>Implicita: genes</td></tr>
+                <tr><td>Costo</td><td>$O(n^2)$</td><td>$O(N_{pop} \cdot n)$</td></tr>
+                <tr><td>Convergencia</td><td>Suave</td><td>Erratica</td></tr>
+                <tr><td>Consistencia</td><td>CV = 1.26%</td><td>CV = 4.87%</td></tr>
+                <tr><td>Velocidad</td><td>831 s</td><td>160 s</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mt-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="fw-bold text-primary">Limitaciones del estudio</h5>
+            <ol class="mb-0 small">
+              <li>Distancias haversine &ne; red vial real (factor sinuosidad ~1.18 para Francia)</li>
+              <li>Solo 2D y 3D - la maldicion de la dimensionalidad afecta diferencialmente a cada metodo</li>
+              <li>EA en Schwefel explora fuera del dominio (sin clamping de bounds en DEAP)</li>
+              <li>Sin pruebas estadisticas formales (Wilcoxon, Kruskal-Wallis)</li>
+              <li>Hiperparametros de la literatura, sin sintonizacion bayesiana especifica</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODIGO -->
+<section class="section section-alt" id="codigo">
+  <div class="container">
+    <h2 class="section-title">Codigo y Reproducibilidad</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body text-center">
+            <div style="font-size:2.5rem;">&#128211;</div>
+            <h5 class="fw-bold mt-2">Notebook 01</h5>
+            <p class="small text-muted">Descenso por gradiente sobre las 6 funciones. Histogramas n=100/500/1000.</p>
+            <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb" class="btn btn-outline-primary btn-sm" target="_blank">Ver en GitHub</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body text-center">
+            <div style="font-size:2.5rem;">&#129516;</div>
+            <h5 class="fw-bold mt-2">Notebook 02</h5>
+            <p class="small text-muted">Comparativa EA / PSO / DE sobre las 6 funciones en 2D y 3D.</p>
+            <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/02_heuristicos_comparativa.ipynb" class="btn btn-outline-primary btn-sm" target="_blank">Ver en GitHub</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body text-center">
+            <div style="font-size:2.5rem;">&#128506;</div>
+            <h5 class="fw-bold mt-2">Notebook 03</h5>
+            <p class="small text-muted">TSP Francia - ACO y GA sobre los 96 departamentos. Modelo de costo EUR.</p>
+            <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_france.ipynb" class="btn btn-outline-primary btn-sm" target="_blank">Ver en GitHub</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+      <div class="col-md-6">
+        <h5 class="fw-bold">Instalacion</h5>
+        <pre style="background:#1e1e1e;color:#d4d4d4;border-radius:8px;padding:1rem;font-size:0.85rem;"><code>git clone https://github.com/AndresGuido9820/optimizacion-metaheuristicas.git
+cd optimizacion-metaheuristicas
+pip install -r requirements.txt
+
+# Correr experimentos heuristicos (~20 min)
+python scripts/heuristicos.py
+
+# Correr TSP Francia (~15 min)
+python scripts/tsp_france.py</code></pre>
+      </div>
+      <div class="col-md-6">
+        <h5 class="fw-bold">Dependencias principales</h5>
+        <pre style="background:#1e1e1e;color:#d4d4d4;border-radius:8px;padding:1rem;font-size:0.85rem;"><code>numpy
+scipy
+matplotlib
+deap          # algoritmos evolutivos
+pyswarms      # PSO
+python-docx   # generacion del reporte Word
+pandas</code></pre>
+        <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas" class="btn btn-primary mt-3" target="_blank">
+          Ver repositorio completo
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h6 class="fw-bold text-white">Optimizacion Metaheuristica - Trabajo 1</h6>
+        <p class="mb-1">Curso: Optimizacion - Universidad Nacional de Colombia</p>
+        <p class="mb-1">Profesor: Juan David Ospina Arango</p>
+        <p>Andres F. Guido Montoya &middot; Juan Jose Martinez &middot; Andres Lemus &middot; Junio 2026</p>
+      </div>
+      <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas" class="text-white me-3">GitHub</a>
+        <a href="report/reporte_trabajo1.docx" class="text-white">Descargar Reporte</a>
+        <p class="mt-3 mb-0 small opacity-75">
+          Referencias: Dorigo (1992), Holland (1975), Kennedy &amp; Eberhart (1995),
+          Storn &amp; Price (1997), Wolpert &amp; Macready (1997)
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
