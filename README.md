@@ -12,7 +12,7 @@
 **Universidad Nacional de Colombia** · 2026
 **Autores:** Andrés F. Guido Montoya · Juan José Martínez · Andrés Lemus
 
-[Reporte completo](https://docs.google.com/document/d/1eQcFLAz5GOUN9K0MFBEfZ_peTL8IftK03j1gI9b6te0/edit?usp=sharing) · [Notebook 01](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb) · [Notebook 02](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/02_heuristicos_comparativa.ipynb) · [Notebook 03](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_mexico.ipynb)
+[Reporte completo](https://docs.google.com/document/d/1eQcFLAz5GOUN9K0MFBEfZ_peTL8IftK03j1gI9b6te0/edit?usp=sharing) · [Notebook 01](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb) · [Notebook 02](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/02_heuristicos_comparativa.ipynb) · [Notebook 03](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_france.ipynb)
 
 </div>
 
@@ -20,11 +20,9 @@
 
 ## Resumen
 
-Comparativa experimental de cuatro algoritmos de optimización —**GD**, **EA**, **PSO** y **DE**— sobre las funciones de Rosenbrock y Rastrigin en 2D y 3D, con 30 corridas independientes por configuración. En la Parte 2 se resuelve el **TSP** para las 32 capitales estatales de México con **ACO** y **GA**, minimizando un modelo de costo económico real (combustible + peajes + tiempo del vendedor).
+Comparativa experimental de cuatro algoritmos de optimización —**GD**, **EA**, **PSO** y **DE**— sobre **seis funciones de prueba clásicas** (Rosenbrock, Rastrigin, Schwefel, Griewank, Goldstein-Price y Camel 6-hump) en 2D y 3D, con n = 100/500/1 000 condiciones iniciales para GD y 30 corridas independientes para los métodos heurísticos. En la Parte 2 se resuelve el **TSP** para las **96 prefecturas de los departamentos de la Francia metropolitana** con **ACO** y **GA**, minimizando un modelo de costo económico real (combustible + peajes + tiempo del vendedor) en EUR.
 
-**Hallazgo principal:** DE alcanza 100% de tasa de éxito en todos los escenarios con hasta 24× menos evaluaciones que PSO y EA. ACO ofrece mayor consistencia en TSP (CV = 0.72% vs. 2.91% del GA), aunque GA encontró la mejor solución absoluta (55,796 MXN).
-
-**Palabras clave:** metaheurísticas · evolución diferencial · colonias de hormigas · TSP · Rosenbrock · Rastrigin · optimización bio-inspirada
+**Palabras clave:** metaheurísticas · evolución diferencial · colonias de hormigas · TSP · Rosenbrock · Rastrigin · Schwefel · Griewank · Goldstein-Price · Camel · optimización bio-inspirada
 
 ---
 
@@ -32,44 +30,22 @@ Comparativa experimental de cuatro algoritmos de optimización —**GD**, **EA**
 
 | # | Contenido | Métodos | Colab |
 |---|-----------|---------|-------|
-| 01 | Funciones de prueba y Descenso por Gradiente | GD + Armijo backtracking | [▶ Abrir](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb) |
-| 02 | Heurísticos — comparativa estadística | EA · PSO · DE | [▶ Abrir](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/02_heuristicos_comparativa.ipynb) |
-| 03 | TSP — 32 capitales de México | ACO · GA | [▶ Abrir](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_mexico.ipynb) |
+| 01 | Seis funciones de prueba y Descenso por Gradiente | GD + Armijo backtracking · n=100/500/1 000 histogramas | [▶ Abrir](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb) |
+| 02 | Heurísticos — comparativa estadística sobre 6 funciones | EA · PSO · DE · 30 corridas | [▶ Abrir](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/02_heuristicos_comparativa.ipynb) |
+| 03 | TSP — 96 prefecturas de la Francia metropolitana | ACO · GA · modelo de costo EUR | [▶ Abrir](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_france.ipynb) |
 
 ---
 
-## Resultados
+## Funciones de prueba
 
-### Parte 1 — Funciones de prueba (30 corridas · dominio $[-5,5]^n$)
-
-**Rosenbrock** — $f(\mathbf{x}) = \sum_{i=1}^{n-1}\left[100(x_{i+1}-x_i^2)^2 + (1-x_i)^2\right]$, $\mathbf{x}^*=(1,\ldots,1)$, umbral $f^*<10^{-4}$
-
-| Método | 2D — Éxito | 2D — Evals | 3D — Éxito | 3D — Evals |
-|--------|:----------:|:----------:|:----------:|:----------:|
-| GD     | ~80%       | ~2,000     | ~50%       | ~3,500     |
-| EA     | 0%         | 55,100     | 0%         | 55,100     |
-| PSO    | 100%       | 25,000     | 10%        | 25,000     |
-| **DE** | **100%**   | **~2,100** | **100%**   | **~11,000**|
-
-**Rastrigin** — $f(\mathbf{x}) = 10n + \sum_{i=1}^{n}\left[x_i^2 - 10\cos(2\pi x_i)\right]$, $\mathbf{x}^*=\mathbf{0}$, umbral $f^*<1.0$
-
-| Método | 2D — Éxito | 3D — Éxito | Evals promedio |
-|--------|:----------:|:----------:|:--------------:|
-| GD     | ~20%       | ~10%       | ~1,500–2,000   |
-| EA     | 100%       | 100%       | 55,100         |
-| PSO    | 100%       | 100%       | 25,000         |
-| **DE** | **100%**   | **100%**   | **~2,300–5,800**|
-
-### Parte 2 — TSP: 32 capitales de México (30 corridas)
-
-Costo: $C = d_\text{km} \cdot (4.5 + 150/80) = 6.375$ MXN/km · Distancias haversine sobre coordenadas INEGI
-
-| Método | Media (MXN) | Std (MXN) | Mejor (MXN) | Peor (MXN) | CV (%) | Tiempo (s) |
-|--------|:-----------:|:---------:|:-----------:|:----------:|:------:|:----------:|
-| **ACO**| **56,957**  | **410**   | 56,195      | 57,715     | **0.72** | 274.6    |
-| GA     | 58,744      | 1,710     | **55,796**  | 64,473     | 2.91   | 111.5      |
-
-> ACO: mayor consistencia (CV=0.72%) · GA: mejor solución absoluta en al menos 1 de 30 corridas
+| Función | Fórmula | Dominio | Mínimo global | Dim |
+|---------|---------|---------|---------------|-----|
+| **Rosenbrock** | $\sum_{i} [100(x_{i+1}-x_i^2)^2+(1-x_i)^2]$ | $[-5,5]^n$ | $f(\mathbf{1})=0$ | 2D, 3D |
+| **Rastrigin** | $10n+\sum_i[x_i^2-10\cos(2\pi x_i)]$ | $[-5,5]^n$ | $f(\mathbf{0})=0$ | 2D, 3D |
+| **Schwefel** | $418.98\,n - \sum_i x_i\sin(\sqrt{|x_i|})$ | $[-500,500]^n$ | $f(420.97,\ldots)\approx 0$ | 2D, 3D |
+| **Griewank** | $1+\frac{\sum x_i^2}{4000}-\prod\cos\!\frac{x_i}{\sqrt{i}}$ | $[-600,600]^n$ | $f(\mathbf{0})=0$ | 2D, 3D |
+| **Goldstein-Price** | ver [Wikipedia](https://en.wikipedia.org/wiki/Test_functions_for_optimization) | $[-2,2]^2$ | $f(0,-1)=3$ | solo 2D |
+| **Camel 6-hump** | $(4-2.1x_1^2+\frac{x_1^4}{3})x_1^2+x_1x_2+(-4+4x_2^2)x_2^2$ | $x_1\!\in\![-3,3],x_2\!\in\![-2,2]$ | $\approx -1.0316$ | solo 2D |
 
 ---
 
@@ -77,9 +53,9 @@ Costo: $C = d_\text{km} \cdot (4.5 + 150/80) = 6.375$ MXN/km · Distancias haver
 
 ```
 Diseño experimental
-├── 30 corridas independientes por configuración (semillas 0–29)
+├── GD: n = 100, 500 y 1 000 condiciones iniciales aleatorias (histogramas de f* y evals)
+├── Heurísticos: 30 corridas independientes por configuración (semillas 0–29)
 ├── Métricas: media, std, mejor, peor, tasa de éxito, n° evaluaciones
-├── Dominio funciones de prueba: [-5, 5]^n
 └── Validez estadística: TCL con N=30 permite prueba t de Student
 
 Parte 1 — Funciones continuas
@@ -88,10 +64,11 @@ Parte 1 — Funciones continuas
 ├── PSO: pyswarms · w=0.729 (Clerc-Kennedy) · c1=c2=2.05 · 50 partículas · 500 iter.
 └── DE:  scipy best1bin · F∈[0.5,1.0] adaptativo · CR=0.7 · popsize=15 · maxiter=1000
 
-Parte 2 — TSP combinatorio
-├── Distancias: haversine · matriz 32×32 · suma total de pares ≈ 427,770 km
+Parte 2 — TSP combinatorio (Francia · 96 prefecturas)
+├── Distancias: haversine · matriz 96×96
+├── Costo: combustible (Renault Clio, SP95 1.75 EUR/L) + peajes 0.08 EUR/km + 25 EUR/h
 ├── ACO: 50 hormigas · 300 iter. · α=1 · β=3 · ρ=0.1 · depósito proporcional Q/C
-└── GA:  DEAP · OX crossover (Davis, 1985) · shuffle mutation · 200 ind. · 500 gen. · torneo k=5
+└── GA:  DEAP · OX crossover · shuffle mutation · 200 ind. · 500 gen. · torneo k=5
 ```
 
 ---
@@ -100,11 +77,11 @@ Parte 2 — TSP combinatorio
 
 | Archivo | Descripción |
 |---------|-------------|
-| [blog_post.md](report/blog_post.md) | Reporte completo con introducción, resultados y discusión |
-| [teoria_01_funciones_gradiente.md](report/teoria_01_funciones_gradiente.md) | Rosenbrock, Rastrigin, GD y búsqueda en línea de Armijo |
+| [blog_post.md](report/blog_post.md) | Reporte completo — introducción, marco teórico, resultados y discusión |
+| [teoria_01_funciones_gradiente.md](report/teoria_01_funciones_gradiente.md) | Las seis funciones, GD y búsqueda en línea de Armijo |
 | [teoria_02_heuristicos.md](report/teoria_02_heuristicos.md) | EA (cxBlend), PSO (factor Clerc-Kennedy), DE (escala adaptativa) |
-| [teoria_03_tsp_mexico.md](report/teoria_03_tsp_mexico.md) | TSP, haversine, ACO (feromona), GA (OX crossover) |
-| [casos_de_uso.md](report/casos_de_uso.md) | Ejemplos de código reutilizables, guía de selección de algoritmo, análisis de complejidad |
+| [teoria_03_tsp_france.md](report/teoria_03_tsp_france.md) | TSP, haversine, ACO (feromona), GA (OX crossover), modelo de costo Francia |
+| [casos_de_uso.md](report/casos_de_uso.md) | Ejemplos de código reutilizables y guía de selección de algoritmo |
 | [discusion.md](report/discusion.md) | Temas de discusión abierta, limitaciones y trabajo futuro |
 | [ai_prompts_log.md](report/ai_prompts_log.md) | Registro de uso de IA en el desarrollo |
 
@@ -116,22 +93,22 @@ Parte 2 — TSP combinatorio
 optimizacion-metaheuristicas/
 │
 ├── notebooks/
-│   ├── 01_funciones_gradiente.ipynb
-│   ├── 02_heuristicos_comparativa.ipynb
-│   ├── 03_tsp_mexico.ipynb
-│   └── outputs/                    ← JSON de resultados y GIFs de convergencia
+│   ├── 01_funciones_gradiente.ipynb    ← GD + 6 funciones + histogramas n=100/500/1000
+│   ├── 02_heuristicos_comparativa.ipynb← EA / PSO / DE sobre 6 funciones
+│   ├── 03_tsp_france.ipynb             ← ACO + GA sobre 96 prefecturas de Francia
+│   └── outputs/                        ← JSON de resultados y GIFs de convergencia
 │
 ├── report/
-│   ├── blog_post.md
+│   ├── blog_post.md                    ← Reporte completo (entrada de blog)
 │   ├── teoria_01_funciones_gradiente.md
 │   ├── teoria_02_heuristicos.md
-│   ├── teoria_03_tsp_mexico.md
+│   ├── teoria_03_tsp_france.md
 │   ├── casos_de_uso.md
 │   ├── discusion.md
 │   └── ai_prompts_log.md
 │
 ├── scripts/
-│   └── heuristicos.py              ← Script de validación Parte 1
+│   └── heuristicos.py                  ← Script de validación Parte 1 (línea de comandos)
 │
 ├── requirements.txt
 └── LICENSE
@@ -151,7 +128,7 @@ pip install -r requirements.txt
 jupyter notebook notebooks/
 ```
 
-Los experimentos usan semillas fijas (0–29). `notebooks/outputs/resultados_tsp.json` contiene los resultados pre-computados de las 60 corridas del TSP para reproducir tablas y figuras sin re-ejecutar (~6 min en CPU).
+Los experimentos usan semillas fijas (0–29). `notebooks/outputs/resultados_tsp.json` contiene los resultados pre-computados del TSP para reproducir tablas y figuras sin re-ejecutar.
 
 ---
 
@@ -179,6 +156,9 @@ Los experimentos usan semillas fijas (0–29). `notebooks/outputs/resultados_tsp
 - Davis, L. (1985). Applying adaptive algorithms to epistatic domains. *IJCAI*, 162–164.
 - Wolpert, D. H., & Macready, W. G. (1997). No free lunch theorems for optimization. *IEEE TEC*, 1(1), 67–82.
 - Rosenbrock, H. H. (1960). An automatic method for finding the greatest or least value of a function. *The Computer Journal*, 3(3), 175–184.
+- Schwefel, H.-P. (1981). *Numerical optimization of computer models*. Wiley.
+- Griewank, A. (1981). Generalized descent for global optimization. *Journal of Optimization Theory and Applications*, 34(1), 11–39.
+- Dixon, L. C. W., & Szegö, G. P. (1978). The global optimization problem: An introduction. *Towards Global Optimization*, 2, 1–15.
 
 ---
 

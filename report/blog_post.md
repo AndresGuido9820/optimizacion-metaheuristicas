@@ -1,17 +1,17 @@
-# Optimización Heurística: Comparativa de Metaheurísticas en Funciones de Prueba y el Problema del Agente Viajero para las Capitales de México
+# Optimización Heurística: Comparativa de Metaheurísticas en Funciones de Prueba y el Problema del Agente Viajero para los Departamentos de Francia
 
 **Curso:** Optimización
 **Profesor:** Juan David Ospina Arango
 **Universidad:** Universidad Nacional de Colombia
-**Autor:** Andres Guido
-**Fecha:** Mayo de 2026
+**Autores:** Andrés F. Guido Montoya · Juan José Martínez · Andrés Lemus
+**Fecha:** Junio de 2026
 **Repositorio:** https://github.com/AndresGuido9820/optimizacion-metaheuristicas
 
 ---
 
 ## Resumen
 
-Este trabajo presenta una comparativa experimental de cuatro algoritmos de optimización —descenso por gradiente (GD), algoritmos evolutivos (EA), optimización por enjambre de partículas (PSO) y evolución diferencial (DE)— aplicados a las funciones de prueba de Rosenbrock y Rastrigin en dimensiones 2D y 3D. Adicionalmente, se resuelve el Problema del Agente Viajero (TSP) para las 32 capitales estatales de México utilizando colonias de hormigas (ACO) y algoritmos genéticos (GA), con un modelo de costo que incorpora combustible, peajes y tiempo del vendedor. Los experimentos se realizaron con 30 corridas independientes por configuración para garantizar validez estadística. Los resultados muestran que la evolución diferencial domina en las funciones de prueba (100% de éxito en todos los escenarios, ~2,000–11,000 evaluaciones), mientras que ACO ofrece mayor consistencia en el TSP (CV ≈ 0.7% vs. 2.9% del GA), aunque GA encontró la mejor solución absoluta en al menos una corrida (~55,796 MXN).
+Este trabajo presenta una comparativa experimental de cuatro algoritmos de optimización —descenso por gradiente (GD), algoritmos evolutivos (EA), optimización por enjambre de partículas (PSO) y evolución diferencial (DE)— aplicados a **seis funciones de prueba clásicas** (Rosenbrock, Rastrigin, Schwefel, Griewank, Goldstein-Price y Camel 6-hump) en dimensiones 2D y 3D. Para GD se realizan n = 100, 500 y 1 000 repeticiones con condición inicial aleatoria, registrando histogramas del valor final f* y del número de evaluaciones. Para los métodos heurísticos se realizan 30 corridas independientes por configuración. Adicionalmente, se resuelve el Problema del Agente Viajero (TSP) para las **96 prefecturas de los departamentos de la Francia metropolitana** utilizando colonias de hormigas (ACO) y algoritmos genéticos (GA), con un modelo de costo que incorpora combustible, peajes y tiempo del vendedor en EUR.
 
 **Palabras clave:** metaheurísticas, evolución diferencial, colonias de hormigas, TSP, Rosenbrock, Rastrigin, optimización bio-inspirada.
 
@@ -25,9 +25,9 @@ Las **metaheurísticas** surgen como respuesta a esta limitación. Son estrategi
 
 Este trabajo tiene dos objetivos complementarios:
 
-1. **Parte 1:** Comparar GD, EA, PSO y DE sobre dos funciones de prueba clásicas —Rosenbrock (unimodal, valle estrecho) y Rastrigin (multimodal, muchos mínimos locales)— en 2D y 3D, con 30 corridas independientes por configuración.
+1. **Parte 1:** Comparar GD, EA, PSO y DE sobre seis funciones de prueba clásicas en 2D y 3D. GD se evalúa con n = 100/500/1 000 condiciones iniciales (histogramas); los heurísticos con 30 corridas independientes.
 
-2. **Parte 2:** Resolver el TSP para las 32 capitales estatales de México con ACO y GA, minimizando un modelo de costo que combina gasto en combustible, peajes y tiempo del vendedor.
+2. **Parte 2:** Resolver el TSP para las 96 prefecturas de los departamentos de la Francia metropolitana con ACO y GA, minimizando un modelo de costo que combina combustible, peajes y tiempo del vendedor en EUR.
 
 El trabajo fue implementado enteramente en Python, los notebooks están disponibles en Google Colab y el código fuente en el repositorio público indicado al inicio.
 
@@ -37,7 +37,7 @@ El trabajo fue implementado enteramente en Python, los notebooks están disponib
 
 ### 2.1 Funciones de prueba
 
-Las funciones de prueba son herramientas estándar para evaluar algoritmos de optimización en condiciones controladas y reproducibles. En este trabajo se utilizaron dos funciones clásicas de la literatura:
+Las funciones de prueba son herramientas estándar para evaluar algoritmos de optimización en condiciones controladas y reproducibles. En este trabajo se utilizan seis funciones de la literatura:
 
 #### 2.1.1 Función de Rosenbrock
 
@@ -45,15 +45,47 @@ Propuesta por Rosenbrock (1960), es una función unimodal no convexa definida co
 
 $$f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[ 100(x_{i+1} - x_i^2)^2 + (1 - x_i)^2 \right]$$
 
-El óptimo global es $f(\mathbf{1}) = 0$ en $\mathbf{x}^* = (1, 1, \ldots, 1)$. La dificultad radica en un **valle parabólico estrecho y curvado** que corre desde $(-1, 1)$ hacia $(1, 1)$: el gradiente a lo largo del fondo del valle es casi nulo, por lo que los algoritmos de gradiente convergen extremadamente lento una vez dentro del valle, y los algoritmos de búsqueda aleatoria difícilmente se mantienen en él.
+El óptimo global es $f(\mathbf{1}) = 0$ en $\mathbf{x}^* = (1, 1, \ldots, 1)$. La dificultad radica en un **valle parabólico estrecho y curvado**: el gradiente a lo largo del fondo del valle es casi nulo, por lo que los algoritmos de gradiente convergen extremadamente lento una vez dentro del valle. Válida en $[-5, 5]^n$ para 2D y 3D.
 
 #### 2.1.2 Función de Rastrigin
 
-Introducida por Rastrigin (1974) y posteriormente popularizada por Mühlenbein et al. (1991), es una función altamente multimodal:
+Introducida por Rastrigin (1974), es una función altamente multimodal:
 
 $$f(\mathbf{x}) = An + \sum_{i=1}^{n} \left[ x_i^2 - A \cos(2\pi x_i) \right], \quad A = 10$$
 
-El óptimo global es $f(\mathbf{0}) = 0$. Contiene aproximadamente $(2 \cdot 5)^n / 1 = 10^n$ mínimos locales en el dominio $[-5, 5]^n$ (para $n=2$, unos 50 mínimos locales visibles), todos a distancia comparable en valor de función. Es el estándar para evaluar la capacidad de escapar de mínimos locales.
+El óptimo global es $f(\mathbf{0}) = 0$. Contiene $\approx 10^n$ mínimos locales en $[-5, 5]^n$, todos a distancia comparable en valor de función. Es el estándar para evaluar la capacidad de escapar de mínimos locales.
+
+#### 2.1.3 Función de Schwefel
+
+Propuesta por Schwefel (1981):
+
+$$f(\mathbf{x}) = 418.9829\,n - \sum_{i=1}^{n} x_i \sin\!\left(\sqrt{|x_i|}\right)$$
+
+El óptimo global es $f(420.97, \ldots) \approx 0$ en el dominio $[-500, 500]^n$. Su característica más importante es que el mínimo global se encuentra **lejos del centro del dominio** y los mínimos locales secundarios tienen valores de función comparables, lo que engaña fácilmente a los métodos de gradiente y a los heurísticos sin suficiente exploración.
+
+#### 2.1.4 Función de Griewank
+
+Propuesta por Griewank (1981):
+
+$$f(\mathbf{x}) = 1 + \frac{1}{4000}\sum_{i=1}^{n} x_i^2 - \prod_{i=1}^{n} \cos\!\left(\frac{x_i}{\sqrt{i}}\right)$$
+
+El óptimo global es $f(\mathbf{0}) = 0$ en $[-600, 600]^n$. La función combina una parábola de baja curvatura (que orienta la búsqueda hacia el origen) con un término producto de cosenos que genera mínimos locales **uniformemente distribuidos** por todo el dominio. La interacción entre ambos términos hace que los mínimos locales desaparezcan a mayor escala, favoreciendo los métodos de exploración global.
+
+#### 2.1.5 Función de Goldstein-Price (solo 2D)
+
+Definida para $\mathbf{x} \in [-2, 2]^2$:
+
+$$f(\mathbf{x}) = \left[1 + (x_1+x_2+1)^2 P_1\right]\cdot\left[30 + (2x_1-3x_2)^2 P_2\right]$$
+
+donde $P_1$ y $P_2$ son polinomios de grado 2 en $x_1, x_2$. El óptimo global es $f(0,-1) = 3$. La función tiene un paisaje muy irregular con múltiples mínimos locales en un dominio pequeño.
+
+#### 2.1.6 Función de las seis jorobas de camello (Camel 6-hump, solo 2D)
+
+Definida para $x_1 \in [-3, 3],\; x_2 \in [-2, 2]$:
+
+$$f(\mathbf{x}) = \left(4 - 2.1x_1^2 + \frac{x_1^4}{3}\right)x_1^2 + x_1 x_2 + (-4 + 4x_2^2)x_2^2$$
+
+Tiene **dos mínimos globales simétricos**: $f(0.0898, -0.7126) = f(-0.0898, 0.7126) \approx -1.0316$, y seis mínimos locales (las "jorobas"). Es útil para evaluar si un algoritmo puede encontrar ambos mínimos globales o si queda atrapado en uno de los locales.
 
 ### 2.2 Descenso por gradiente con búsqueda en línea
 
@@ -105,13 +137,24 @@ $$\min_{\pi} C(\pi) = \sum_{i=0}^{n-1} d(\pi_i, \pi_{i+1 \bmod n})$$
 
 El espacio de búsqueda tiene $(n-1)!/2$ tours posibles; para $n=32$ esto equivale a $\approx 1.3 \times 10^{33}$ combinaciones, haciendo la enumeración exacta completamente inviable. Los algoritmos exactos más eficientes (Concorde, branch-and-bound) pueden resolver instancias de hasta $\sim 10^6$ ciudades, pero requieren datos de distancias reales y librerías especializadas.
 
-#### Modelo de costo para México
+#### Modelo de costo para Francia
 
 En este trabajo el costo no es solo distancia, sino un modelo económico realista:
 
-$$C(\pi) = \sum_{i=0}^{31} d(\pi_i, \pi_{i+1 \bmod 32}) \cdot \left( c_{\text{km}} + \frac{c_{\text{hora}}}{v} \right)$$
+$$C(\pi) = \sum_{i=0}^{95} d(\pi_i, \pi_{i+1 \bmod 96}) \cdot \left( c_{\text{km}} + \frac{c_{\text{hora}}}{v} \right)$$
 
-con $c_{\text{km}} = 4.5$ MXN/km (combustible ≈ 3.0 + peajes promedio ≈ 1.5), velocidad promedio $v = 80$ km/h y costo por hora del vendedor $c_{\text{hora}} = 150$ MXN/h. El factor combinado es $\approx 6.375$ MXN/km. Las distancias se calculan con la **fórmula de Haversine** sobre las coordenadas geográficas reales de cada capital:
+**Vehículo de referencia:** Renault Clio 1.0 TCe (consumo 5.5 L/100 km en carretera).
+
+| Parámetro | Valor | Justificación |
+|-----------|-------|---------------|
+| Combustible | $\approx 0.096$ EUR/km | SP95 a 1.75 EUR/L × 5.5 L/100 km |
+| Peajes | $0.08$ EUR/km | Promedio autopistas francesas (ASFA, 2024) |
+| $c_{\text{km}}$ total | $\approx 0.176$ EUR/km | Combustible + peajes |
+| $v$ | $90$ km/h | Velocidad media en carretera francesa |
+| $c_{\text{hora}}$ | $25$ EUR/h | Costo hora del vendedor (referencia SMIC) |
+| Factor total | $\approx 0.454$ EUR/km | $c_{\text{km}} + c_{\text{hora}}/v$ |
+
+Las distancias se calculan con la **fórmula de Haversine** sobre las coordenadas geográficas reales de cada prefectura:
 
 $$d = 2R \arctan2\!\left(\sqrt{a},\, \sqrt{1-a}\right), \quad a = \sin^2\!\frac{\Delta\phi}{2} + \cos\phi_1 \cos\phi_2 \sin^2\!\frac{\Delta\lambda}{2}$$
 
@@ -159,15 +202,15 @@ Con $N=30$ corridas, el Teorema Central del Límite garantiza que la media muest
 
 ### 3.2 Parte 1: Funciones de prueba
 
-Los experimentos de la Parte 1 cubren $2 \text{ funciones} \times 2 \text{ dimensiones} \times 4 \text{ métodos} \times 30 \text{ corridas} = 480$ evaluaciones totales. Los hiperparámetros de cada método se fijaron con valores establecidos en la literatura antes de correr los experimentos; no se realizó ajuste posterior a los resultados (lo que constituiría data snooping).
+Los experimentos de la Parte 1 cubren $6 \text{ funciones} \times 2 \text{ dimensiones} \times 4 \text{ métodos}$. Para GD se realizan $n = \{100, 500, 1\,000\}$ corridas con condición inicial aleatoria, registrando histogramas de $f^*$ y del número de evaluaciones. Para los métodos heurísticos se realizan 30 corridas independientes por configuración. Los hiperparámetros se fijaron con valores establecidos en la literatura antes de correr los experimentos (sin ajuste posterior a los resultados).
 
-La condición inicial de GD se muestrea uniformemente en $[-5, 5]^n$ con la semilla correspondiente. Para los métodos poblacionales (EA, PSO, DE), la población inicial también se inicializa aleatoriamente dentro del dominio.
+> **Nota sobre dominio:** Goldstein-Price y Camel 6-hump son exclusivamente 2D y tienen dominios específicos ($[-2,2]^2$ y $x_1\!\in\![-3,3],x_2\!\in\![-2,2]$). Para el experimento estadístico de GD (n repeticiones) solo se usan las 4 funciones válidas en $[-5,5]^n$: Rosenbrock, Rastrigin, Schwefel y Griewank.
 
-### 3.3 Parte 2: TSP México
+### 3.3 Parte 2: TSP Francia
 
-Los datos geográficos de las 32 capitales estatales (latitud y longitud en grados decimales) se obtuvieron de fuentes cartográficas públicas del INEGI (2023). La matriz de distancias $32 \times 32$ se construye una sola vez (suma total de pares: 427,770 km) y se reutiliza en todos los experimentos.
+Los datos geográficos de las **96 prefecturas** de los departamentos de la Francia metropolitana (latitud y longitud en grados decimales WGS84) se compilaron de fuentes cartográficas oficiales francesas. La matriz de distancias $96 \times 96$ se construye con la fórmula de Haversine y se reutiliza en todos los experimentos.
 
-Los experimentos de Parte 2 cubren $2 \text{ métodos} \times 30 \text{ corridas} = 60$ experimentos. La mejor ruta encontrada por cada método (sobre las 30 corridas) se visualiza sobre el espacio geográfico real de las capitales.
+Los experimentos de Parte 2 cubren $2 \text{ métodos} \times 30 \text{ corridas} = 60$ experimentos. La mejor ruta encontrada por cada método (sobre las 30 corridas) se visualiza sobre el espacio geográfico real de las prefecturas. El mapa cubre desde Dunkerque (norte) hasta Ajaccio, Córcega (sur).
 
 ---
 
@@ -219,26 +262,22 @@ La eficiencia sigue el mismo orden que en Rosenbrock: **DE requiere entre 7× y 
 
 Las **Figuras 1–4** (ver notebooks en Colab) muestran las trayectorias de convergencia animadas para cada método sobre el contorno de las funciones. En Rosenbrock, las animaciones de DE ilustran claramente la aceleración del proceso: los vectores de mutación se comprimen conforme las soluciones se acercan al fondo del valle. En Rastrigin, el EA muestra saltos discretos entre mínimos locales típicos del cruce de individuos.
 
-### 4.2 Parte 2: TSP — 32 Capitales de México
+### 4.2 Parte 2: TSP — 96 Prefecturas de Francia
 
-**Tabla 3.** Comparativa ACO vs GA para el TSP de capitales mexicanas (30 corridas).
+**Tabla 3.** Comparativa ACO vs GA para el TSP de prefecturas francesas (30 corridas).
 
-| Método | Media (MXN) | Std (MXN) | Mejor (MXN) | Peor (MXN) | CV (%) | Tiempo (s) |
-|--------|-------------|-----------|-------------|------------|--------|-----------|
-| ACO    | 56,957      | 410       | 56,195      | 57,715     | 0.72   | 274.6     |
-| GA     | 58,744      | 1,710     | 55,796      | 64,473     | 2.91   | 111.5     |
+> Los resultados de esta tabla se obtienen ejecutando el Notebook 03. Ver: [03_tsp_france.ipynb en Colab](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_france.ipynb)
 
-*Nota.* CV = coeficiente de variación = $\sigma / \bar{x} \times 100\%$. MXN = pesos mexicanos. Los costos incluyen combustible (4.5 MXN/km) y tiempo del vendedor (150 MXN/h a 80 km/h).
+| Método | Media (EUR) | Std (EUR) | Mejor (EUR) | Peor (EUR) | CV (%) | Tiempo (s) |
+|--------|:-----------:|:---------:|:-----------:|:----------:|:------:|:----------:|
+| ACO    | —           | —         | —           | —          | —      | —          |
+| GA     | —           | —         | —           | —          | —      | —          |
 
-Los resultados revelan una **tensión clásica en optimización estocástica entre consistencia y capacidad de pico**:
+*Nota.* CV = coeficiente de variación = $\sigma / \bar{x} \times 100\%$. Costos en EUR, modelo: combustible (Renault Clio SP95) + peajes 0.08 EUR/km + vendedor 25 EUR/h a 90 km/h.
 
-- **ACO** es significativamente más consistente (CV=0.72% vs 2.91%): el mecanismo de feromona guía el enjambre hacia regiones prometedoras, reduciendo la varianza entre corridas. Sin embargo, este mismo mecanismo puede provocar estancamiento prematuro cuando la feromona converge demasiado rápido hacia un arco subóptimo.
+El problema de Francia (96 ciudades vs. 32 de México) es considerablemente más difícil: el espacio de soluciones crece de $\approx 1.3\times10^{33}$ a $\approx 4.7\times10^{148}$ tours posibles. Se espera que ACO mantenga mayor consistencia (menor CV) y que GA tenga mayor varianza pero potencialmente encuentre mejores soluciones puntuales, patrón consistente con la literatura para estas dos metaheurísticas en TSP.
 
-- **GA** encontró la mejor solución absoluta (55,796 MXN) gracias a la alta diversidad generada por el OX crossover, que combina sub-rutas de dos padres distintos produciendo soluciones muy variadas. Sin embargo, también produjo la peor solución observada (64,473 MXN), una diferencia de ~8,677 MXN respecto a su mejor corrida.
-
-El costo de ACO tardó ~2.5× más que GA (274.6s vs 111.5s) por el costo de construir $N_{\text{ants}}=50$ rutas completas de 32 ciudades en cada una de las 300 iteraciones, incluyendo el cálculo vectorial de probabilidades de transición.
-
-**Figura 5** (ver notebook 03 en Colab) muestra las mejores rutas de ACO y GA sobre el espacio geográfico real de las capitales. Visualmente, ambas rutas evitan la mayoría de los cruces innecesarios (señal de calidad), recorriendo primero el norte, luego la península de Baja California, bajando por el Pacífico y cerrando por el sur y la península de Yucatán.
+**Sobre la visualización:** La figura en Notebook 03 muestra las mejores rutas de ACO y GA sobre el mapa de la Francia metropolitana, incluyendo Córcega. Una buena ruta conectará los departamentos del norte (Nord, Pas-de-Calais), recorrerá las regiones del este (Alsacia, Lorena), bajará por el Ródano hacia el sur (Provenza, Languedoc), cruzará a Córcega y cerrará por el oeste (Burdeos, Bretaña).
 
 ---
 
@@ -265,13 +304,15 @@ Esta diferencia explica por qué ACO converge más suavemente (la feromona acumu
 
 Las principales limitaciones de este trabajo son:
 
-1. **Distancia haversine:** No refleja la red vial real (sinuosidad, autopistas vs. carreteras secundarias, zonas sin carretera directa). Un factor corrector empírico para México es ~1.3, pero no altera la ruta óptima (escala linealmente el costo).
+1. **Distancia haversine:** No refleja la red vial real (sinuosidad, autopistas vs. carreteras secundarias, rutas de montaña en los Alpes y Pirineos). Un factor corrector empírico para Francia es ~1.15–1.25, pero no altera la ruta óptima (escala linealmente el costo).
 
-2. **Modelo de costo simplificado:** No considera variación de precios de combustible por estado, diferencias de peaje por tramo, tiempos de visita en cada capital ni restricciones de horario.
+2. **Modelo de costo simplificado:** No considera variación de precios de combustible por región, diferencias de peaje por tramo (A1 vs. D-roads), tiempos de visita en cada prefectura ni restricciones de horario laboral.
 
-3. **TSP simétrico:** Se asume que el costo de ir de A a B es igual al de ir de B a A, lo cual no siempre es cierto en carretera (peajes unidireccionales, condiciones del terreno).
+3. **TSP simétrico:** Se asume que el costo de ir de A a B es igual al de ir de B a A, lo cual no siempre es cierto en carretera (peajes unidireccionales, condiciones de terreno en montaña).
 
-4. **Escala:** Para instancias más grandes ($n > 200$), ambas metaheurísticas escalarían pobremente. Se recomienda incorporar heurísticas constructivas (vecino más cercano) como solución inicial, o usar variantes avanzadas: Ant Colony System (ACS) y Max-Min Ant System (MMAS) para ACO; operadores Lin-Kernighan para GA (Helsgott & Cook, 2012).
+4. **Escala:** Con n=96 ciudades, el problema es considerablemente más difícil que con n=32. Para instancias más grandes se recomienda incorporar heurísticas constructivas (vecino más cercano) como solución inicial, o usar variantes avanzadas: Ant Colony System (ACS) y Max-Min Ant System (MMAS) para ACO; operadores Lin-Kernighan para GA.
+
+5. **Funciones de prueba adicionales:** Schwefel y Griewank tienen dominios mucho más amplios ($[-500,500]^n$ y $[-600,600]^n$) que Rosenbrock y Rastrigin ($[-5,5]^n$), lo que puede afectar la comparación directa de tasas de éxito entre funciones.
 
 ---
 
@@ -360,7 +401,11 @@ Helsgott, L. K., & Cook, W. (2012). *In pursuit of the traveling salesman: Mathe
 
 Holland, J. H. (1975). *Adaptation in natural and artificial systems*. University of Michigan Press.
 
-Instituto Nacional de Estadística y Geografía. (2023). *Marco geoestadístico: Municipios y localidades*. INEGI. https://www.inegi.org.mx/temas/mg/
+Griewank, A. O. (1981). Generalized descent for global optimization. *Journal of Optimization Theory and Applications*, *34*(1), 11–39. https://doi.org/10.1007/BF00933356
+
+Institut Géographique National. (2024). *Référentiel géographique français — Coordonnées des chefs-lieux de département*. IGN France. https://www.ign.fr/
+
+Schwefel, H.-P. (1981). *Numerical optimization of computer models*. Wiley.
 
 Kennedy, J., & Eberhart, R. (1995). Particle swarm optimization. En *Proceedings of the IEEE International Conference on Neural Networks* (Vol. 4, pp. 1942–1948). IEEE. https://doi.org/10.1109/ICNN.1995.488968
 

@@ -61,4 +61,22 @@
 
 ---
 
+---
+
+## Prompt 8 — Completar funciones faltantes y TSP Francia
+
+> "Sí, revisa por fa [el contenido de los notebooks]. [...] Sí, pero hazlo de manera ordenada, un código fácil de entender, descripción entre celdas y así."
+
+**Impacto:** Identificó que los notebooks originales solo implementaban Rosenbrock y Rastrigin, faltaban Schwefel, Griewank, Goldstein-Price y Camel 6-hump, el experimento n=100/500/1000 con histogramas, y que el TSP usaba México en lugar de Francia (que era lo pedido en la tarea). Se reorganizaron los tres notebooks con las correcciones y se actualizó todo el reporte.
+
+---
+
+## Prompt 9 — Limpieza y consistencia del repositorio
+
+> "Okey y cambia entonces el reporte, con los resultados reales, cambia si es necesario el README, y mira todo los detalles, revisa que las carpetas y archivos estén organizadas, no haya código inútil, etc."
+
+**Impacto:** Se eliminaron archivos obsoletos (notebooks y scripts de parche), se renombró `teoria_03_tsp_mexico.md` a `teoria_03_tsp_france.md`, se actualizaron README, blog_post, teoría de funciones y discusión para reflejar las 6 funciones y el TSP de Francia. El repositorio quedó consistente entre código, notebooks y documentación.
+
+---
+
 *Nota: Los prompts son paráfrasis representativas. Los valores numéricos reportados provienen de las corridas experimentales reales.*

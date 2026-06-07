@@ -66,16 +66,16 @@ Esta propiedad es fundamental: en optimización combinatoria, **la factibilidad 
 
 ### 5. Distancia haversine vs. red vial real
 
-Las distancias haversine subestiman el recorrido real. Para México:
+Las distancias haversine subestiman el recorrido real. Para Francia:
 
 | Tipo de vía | Factor de sinuosidad empírico |
 |-------------|:-----------------------------:|
-| Autopistas de cuota | ~1.10–1.15 |
-| Carreteras federales | ~1.20–1.30 |
-| Carreteras secundarias | ~1.30–1.50 |
-| Promedio nacional | ~1.25 |
+| Autopistas (A) | ~1.10–1.15 |
+| Rutas nacionales (RN) | ~1.20–1.30 |
+| Rutas departamentales (D) | ~1.30–1.50 |
+| Promedio nacional | ~1.18 |
 
-**Impacto en el modelo:** Si todos los arcos se multiplican por el mismo factor $k=1.25$, el costo total escala linealmente ($C_\text{real} \approx 1.25 \cdot C_\text{haversine}$) pero **la ruta óptima no cambia** (el factor cancela al comparar tours). Sin embargo, si el factor varía por tramo (e.g., Baja California tiene carreteras largas con poca sinuosidad vs. Oaxaca con carreteras montañosas), la ruta óptima sí cambiaría.
+**Impacto en el modelo:** Si todos los arcos se multiplican por el mismo factor $k=1.18$, el costo total escala linealmente ($C_\text{real} \approx 1.18 \cdot C_\text{haversine}$) pero **la ruta óptima no cambia** (el factor cancela al comparar tours). Sin embargo, si el factor varía por tramo (e.g., llanuras del norte vs. rutas de montaña en los Alpes o el Macizo Central), la ruta óptima sí podría cambiar.
 
 ---
 
@@ -117,7 +117,7 @@ print(f"p-value:       {p_value:.4f}")
 print(f"Conclusión:    {'ACO < GA significativo (α=0.05)' if p_value < 0.05 else 'Sin diferencia significativa'}")
 ```
 
-La diferencia de medias (ACO: 56,957 vs GA: 58,744 MXN, Δ=1,787 MXN) combinada con std(GA)=1,710 sugiere que la prueba sería significativa, pero el resultado exacto depende de la distribución empírica de las 30 corridas.
+La diferencia entre ACO y GA para Francia (ver Notebook 03) combinada con sus desviaciones estándar determinará si la prueba es estadísticamente significativa al nivel $\alpha=0.05$.
 
 ---
 
@@ -141,7 +141,7 @@ La diferencia de medias (ACO: 56,957 vs GA: 58,744 MXN, Δ=1,787 MXN) combinada 
 
 | Extensión | Método afectado | Impacto esperado |
 |-----------|----------------|-----------------|
-| Distancias reales (API Google Maps / grafo INEGI) | ACO, GA | Rutas más realistas; posible cambio en ruta óptima |
+| Distancias reales (API Google Maps / grafo IGN Francia) | ACO, GA | Rutas más realistas; posible cambio en ruta óptima |
 | Variantes avanzadas: ACS, MMAS | ACO | Reducción de convergencia prematura |
 | Operadores Lin-Kernighan | GA | Mejora de 5–15% en calidad de solución para TSP |
 | Dimensiones $n \in \{5, 10, 20, 50\}$ | DE, PSO, EA | Caracterizar escalabilidad real |
