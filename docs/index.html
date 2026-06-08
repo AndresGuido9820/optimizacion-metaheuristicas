@@ -276,6 +276,19 @@ tailwind.config = {
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
       </div>
     </div>
+
+    <!-- GIF GD -->
+    <div class="border-2 border-outline-variant fade-up overflow-hidden mt-gutter">
+      <div class="bg-surface-container px-5 py-3 border-b border-outline-variant">
+        <span class="text-label-caps font-label-caps text-primary uppercase tracking-wider">Animacion &mdash; Descenso por Gradiente sobre Rosenbrock 2D</span>
+      </div>
+      <div class="flex justify-center bg-surface-container-lowest p-4">
+        <img src="assets/figures/gd_rosenbrock_2d.gif" alt="Animacion descenso por gradiente Rosenbrock 2D" class="max-w-full" style="max-height:400px;"/>
+      </div>
+      <div class="bg-surface-container px-4 py-3 border-t border-outline-variant">
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 3 &mdash; Trayectoria del descenso por gradiente con backtracking Armijo sobre Rosenbrock 2D (escala log). El punto rojo recorre el valle estrecho hasta el minimo global (1,1). Condicion inicial aleatoria, semilla 42.</span>
+      </div>
+    </div>
   </section>
 
   <!-- ══ HEURISTICOS ════════════════════════════════════════════════════ -->
@@ -301,15 +314,28 @@ tailwind.config = {
     <div class="border-2 border-outline-variant mb-gutter fade-up cursor-zoom-in overflow-hidden" onclick="openLightbox(this.querySelector('img'))">
       <img src="assets/figures/comparison_bars.png" alt="Tasa de exito por metodo y funcion" class="w-full object-cover hover:opacity-95 transition-opacity"/>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant flex items-center justify-between">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 3 &mdash; Tasa de exito de EA, PSO y DE sobre seis configuraciones. DE domina en Rosenbrock 2D/3D (100%). PSO cae a 10% en 3D. EA 0% en Rosenbrock 3D.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 4 &mdash; Tasa de exito de EA, PSO y DE sobre seis configuraciones. DE domina en Rosenbrock 2D/3D (100%). PSO cae a 10% en 3D. EA 0% en Rosenbrock 3D.</span>
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
       </div>
     </div>
     <div class="border-2 border-outline-variant mb-stack-md fade-up cursor-zoom-in overflow-hidden" onclick="openLightbox(this.querySelector('img'))">
       <img src="assets/figures/evals_comparison.png" alt="Numero de evaluaciones por metodo" class="w-full object-cover hover:opacity-95 transition-opacity"/>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant flex items-center justify-between">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 4 &mdash; Evaluaciones promedio en escala log. DE usa entre 3x y 12x menos evaluaciones que EA y PSO para el mismo umbral de exito.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 5 &mdash; Evaluaciones promedio en escala log. DE usa entre 3x y 12x menos evaluaciones que EA y PSO para el mismo umbral de exito.</span>
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
+      </div>
+    </div>
+
+    <!-- GIF PSO -->
+    <div class="border-2 border-outline-variant fade-up overflow-hidden mb-stack-md">
+      <div class="bg-surface-container px-5 py-3 border-b border-outline-variant">
+        <span class="text-label-caps font-label-caps text-primary uppercase tracking-wider">Animacion &mdash; PSO sobre Rosenbrock 2D</span>
+      </div>
+      <div class="flex justify-center bg-surface-container-lowest p-4">
+        <img src="assets/figures/pso_rosenbrock_2d.gif" alt="Animacion PSO Rosenbrock 2D" class="max-w-full" style="max-height:340px;"/>
+      </div>
+      <div class="bg-surface-container px-4 py-3 border-t border-outline-variant">
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 6 &mdash; Enjambre de 30 particulas (PSO, w=0.729, c1=c2=2.05) convergiendo sobre Rosenbrock 2D. Panel izquierdo: posiciones sobre el contour. Panel derecho: curva de mejor f global en escala symlog. Las particulas se concentran rapidamente en el valle.</span>
       </div>
     </div>
 
@@ -485,14 +511,14 @@ tailwind.config = {
     <div class="border-2 border-outline-variant mb-gutter fade-up cursor-zoom-in overflow-hidden" onclick="openLightbox(this.querySelector('img'))">
       <img src="assets/figures/mejor_ruta_comparativa.png" alt="Mejor ruta ACO vs GA sobre Francia" class="w-full object-cover hover:opacity-95 transition-opacity"/>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant flex items-center justify-between">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 5 &mdash; Mejor ruta ACO (3 285 EUR) vs GA (4 092 EUR) sobre las 96 prefecturas. ACO recorre el perimetro antes del interior: ruta geograficamente mas coherente con menos cruces.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 7 &mdash; Mejor ruta ACO (3 285 EUR) vs GA (4 092 EUR) sobre las 96 prefecturas. ACO recorre el perimetro antes del interior: ruta geograficamente mas coherente con menos cruces.</span>
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
       </div>
     </div>
     <div class="border-2 border-outline-variant fade-up cursor-zoom-in overflow-hidden" onclick="openLightbox(this.querySelector('img'))">
       <img src="assets/figures/convergencia_aco_ga.png" alt="Convergencia ACO vs GA" class="w-full object-cover hover:opacity-95 transition-opacity"/>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant flex items-center justify-between">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 6 &mdash; Curvas de convergencia. ACO converge suave y monotonicamente; GA muestra saltos abruptos del OX crossover. ACO ~26% mas economico en promedio.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 8 &mdash; Curvas de convergencia. ACO converge suave y monotonicamente; GA muestra saltos abruptos del OX crossover. ACO ~26% mas economico en promedio.</span>
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
       </div>
     </div>
