@@ -742,12 +742,16 @@ sections.forEach(s => navObs.observe(s));
 
 /* Progress bars */
 const pbData = [
-  { label:'Rosenbrock 2D', ea:13,  pso:100, de:100 },
-  { label:'Rosenbrock 3D', ea:0,   pso:10,  de:100 },
-  { label:'Rastrigin 2D',  ea:100, pso:100, de:100 },
-  { label:'Rastrigin 3D',  ea:100, pso:100, de:100 },
-  { label:'Schwefel 2D',   ea:100, pso:100, de:83  },
-  { label:'Griewank 2D',   ea:50,  pso:100, de:93  },
+  { label:'Rosenbrock 2D',      ea:13,  pso:100, de:100 },
+  { label:'Rosenbrock 3D',      ea:0,   pso:10,  de:100 },
+  { label:'Rastrigin 2D',       ea:100, pso:100, de:100 },
+  { label:'Rastrigin 3D',       ea:100, pso:100, de:100 },
+  { label:'Schwefel 2D',        ea:100, pso:100, de:83  },
+  { label:'Schwefel 3D',        ea:100, pso:30,  de:97  },
+  { label:'Griewank 2D',        ea:50,  pso:100, de:93  },
+  { label:'Griewank 3D',        ea:7,   pso:43,  de:93  },
+  { label:'Goldstein-Price 2D', ea:100, pso:100, de:100 },
+  { label:'Camel 6-hump 2D',    ea:100, pso:100, de:100 },
 ];
 const cont = document.getElementById('pbar-container');
 pbData.forEach(d => {
