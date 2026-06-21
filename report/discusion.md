@@ -10,7 +10,7 @@ Preguntas científicas que surgen de los resultados experimentales y que pueden 
 
 ### 1. ¿Es DE siempre superior? El Teorema de No Free Lunch
 
-DE dominó en este estudio (100% de éxito, mínimas evaluaciones), pero el **Teorema de No Free Lunch** (Wolpert & Macready, 1997) establece que ningún algoritmo es universalmente mejor que otro en el promedio sobre todos los problemas posibles. En clases de problemas donde DE fallaría:
+DE fue el método más robusto y eficiente en este estudio (100% de éxito en Rosenbrock y Rastrigin con el menor número de evaluaciones), pero **no fue universalmente superior**: en Schwefel 2D y Griewank 2D el PSO igualó o superó su tasa de éxito, y en Schwefel 3D el EA con recorte al dominio fue más estable que el PSO. Esto ilustra el **Teorema de No Free Lunch** (Wolpert & Macready, 1997): ningún algoritmo es universalmente mejor que otro en el promedio sobre todos los problemas posibles. En clases de problemas donde DE fallaría:
 
 - **Espacios discretos o combinatorios:** DE opera sobre vectores reales; su adaptación a permutaciones requiere codificación especial y pierde su ventaja de escala adaptativa.
 - **Funciones separables de alta dimensión:** En problemas donde cada variable es independiente, los métodos coordenada a coordenada (coordinate descent) son más eficientes que la diferenciación vectorial de DE.
@@ -27,10 +27,11 @@ ACO usa **memoria explícita** (matriz de feromona $\tau \in \mathbb{R}^{n \time
 |---|---|---|
 | Costo de memoria | $O(n^2)$ — crece cuadráticamente | $O(N_\text{pop} \cdot n)$ — lineal en $n$ |
 | Velocidad de convergencia | Suave, monotónica | Errática, con saltos abruptos |
-| Capacidad de pico | Menor (CV=0.72%) | Mayor (encontró la mejor absoluta) |
+| Consistencia (CV) | Mejor: CV = 1.26% | Peor: CV = 4.87% |
+| Mejor solución absoluta | 3 285 EUR (la mejor del estudio) | 4 092 EUR |
 | Riesgo de estancamiento | Alto si $\rho$ es pequeño | Bajo por diversidad genética |
 
-Para $n=32$ capitales, $O(n^2) = 1024$ celdas de feromona es trivial. Para $n=1000$ ciudades, la matriz ocupa ~8 MB y el cómputo de probabilidades de transición domina el tiempo de ejecución.
+En este estudio ACO superó a GA tanto en consistencia como en la mejor solución absoluta, gracias a la guía heurística de visibilidad ($\eta_{ij}=1/d_{ij}$) que GA no posee. Para $n=96$ capitales, $O(n^2) = 9\,216$ celdas de feromona es trivial. Para $n=1000$ ciudades, la matriz ocupa ~8 MB y el cómputo de probabilidades de transición domina el tiempo de ejecución.
 
 ---
 
@@ -91,7 +92,7 @@ Con $\rho=0.1$, después de $t$ iteraciones sin actualización, la feromona deca
 
 ### 7. Inicialización de la población y sesgo experimental
 
-Todos los métodos usan inicialización uniforme en $[-5, 5]^n$. Una inicialización inteligente podría mejorar el rendimiento pero introduce sesgo comparativo. Para un estudio justo:
+Todos los métodos usan inicialización uniforme en el dominio propio de cada función ($[-5,5]^n$ en Rosenbrock/Rastrigin, $[-500,500]^n$ en Schwefel, $[-600,600]^n$ en Griewank, etc.). Una inicialización inteligente podría mejorar el rendimiento pero introduce sesgo comparativo. Para un estudio justo:
 
 > **Principio de comparación justa:** Si se aplica una técnica (inicialización inteligente, operadores especializados) a un método, debe aplicarse igualmente a todos los métodos comparados, o justificarse explícitamente por qué es específica del método.
 

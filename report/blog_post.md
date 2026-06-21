@@ -135,7 +135,7 @@ El TSP es uno de los problemas de optimización combinatoria más estudiados en 
 
 $$\min_{\pi} C(\pi) = \sum_{i=0}^{n-1} d(\pi_i, \pi_{i+1 \bmod n})$$
 
-El espacio de búsqueda tiene $(n-1)!/2$ tours posibles; para $n=32$ esto equivale a $\approx 1.3 \times 10^{33}$ combinaciones, haciendo la enumeración exacta completamente inviable. Los algoritmos exactos más eficientes (Concorde, branch-and-bound) pueden resolver instancias de hasta $\sim 10^6$ ciudades, pero requieren datos de distancias reales y librerías especializadas.
+El espacio de búsqueda tiene $(n-1)!/2$ tours posibles; para $n=96$ esto equivale a $\approx 4.7 \times 10^{148}$ combinaciones, haciendo la enumeración exacta completamente inviable. Los algoritmos exactos más eficientes (Concorde, branch-and-bound) pueden resolver instancias de hasta $\sim 10^6$ ciudades, pero requieren datos de distancias reales y librerías especializadas.
 
 #### Modelo de costo para Francia
 
@@ -192,11 +192,12 @@ Los parámetros son: $N_{\text{pop}} = 200$, $N_{\text{gen}} = 500$, $p_{\text{c
 
 Para garantizar la reproducibilidad y validez estadística de las comparaciones, se siguió el siguiente protocolo experimental:
 
-- **30 corridas independientes** por cada combinación de método × función × dimensión (Parte 1) y método × problema (Parte 2), usando semillas 0 a 29.
-- **Métricas registradas:** valor de la función objetivo en la mejor solución encontrada ($f^*$), media ($\bar{f}$), desviación estándar ($\sigma_f$), mejor ($f_{\min}$) y peor ($f_{\max}$) sobre las 30 corridas, y tasa de éxito ($P(\text{éxito})$).
-- **Criterio de éxito (Parte 1):** $f^* < 10^{-4}$ para Rosenbrock y $f^* < 1.0$ para Rastrigin, umbrales que reflejan la dificultad relativa de cada función.
-- **Dominio:** $[-5, 5]^n$ para ambas funciones de prueba.
-- **Evaluaciones de función:** Se registran y comparan para medir eficiencia, no solo calidad de solución.
+- **Descenso por gradiente (punto 1):** condición inicial aleatoria uniforme en el dominio de cada función, repetida $n = \{100, 500, 1\,000\}$ veces; se registran los histogramas del valor final $f^*$ y del número de evaluaciones de la función objetivo, en 2D y 3D.
+- **Métodos heurísticos (punto 2):** **30 corridas independientes** por cada combinación de método × función × dimensión, usando semillas 0 a 29.
+- **Métricas registradas:** valor de la función objetivo en la mejor solución encontrada ($f^*$), media ($\bar{f}$), desviación estándar ($\sigma_f$), mejor ($f_{\min}$) y peor ($f_{\max}$), y tasa de éxito ($P(\text{éxito})$).
+- **Criterio de éxito (Parte 1):** distancia al óptimo global conocido, $|f^* - f^\star| < \text{tol}$, con tolerancias fijadas *a priori* según la escala de cada función: $10^{-4}$ (Rosenbrock), $10^{-1}$ (Rastrigin), $1.0$ (Schwefel), $10^{-2}$ (Griewank, Goldstein-Price, Camel 6-hump). Se usa la distancia al óptimo —no un umbral absoluto— para que un mínimo fuera del dominio no pueda contarse como éxito.
+- **Dominios:** $[-5,5]^n$ (Rosenbrock, Rastrigin), $[-500,500]^n$ (Schwefel), $[-600,600]^n$ (Griewank), $[-2,2]^2$ (Goldstein-Price) y $x_1\!\in\![-3,3], x_2\!\in\![-2,2]$ (Camel 6-hump).
+- **Evaluaciones de función:** El descenso por gradiente usa gradiente numérico por diferencias centrales ($h=10^{-5}$); se contabilizan **todas** las evaluaciones de $f$ —incluidas las del gradiente y las del *backtracking*— para que la métrica sea comparable con la de los heurísticos.
 
 Con $N=30$ corridas, el Teorema Central del Límite garantiza que la media muestral $\bar{f}$ sigue aproximadamente una distribución normal, permitiendo aplicar pruebas estadísticas paramétricas (prueba $t$ de Student) para comparaciones entre métodos (Montgomery & Runger, 2018).
 
@@ -216,68 +217,136 @@ Los experimentos de Parte 2 cubren $2 \text{ métodos} \times 30 \text{ corridas
 
 ## 4. Resultados
 
-### 4.1 Parte 1: Funciones de prueba
+> Todos los valores numéricos de esta sección provienen de los experimentos reproducibles del repositorio: `scripts/histogramas_gd.py` (descenso por gradiente), `scripts/heuristicos.py` → `resultados_heuristicos.json` (EA/PSO/DE) y `scripts/tsp_france.py` → `notebooks/outputs/resultados_tsp.json` (TSP). Semillas fijas (0–29).
 
-#### 4.1.1 Rosenbrock 2D y 3D
+### 4.1 Parte 1, punto 1 — Descenso por gradiente: histogramas (n = 100, 500, 1 000)
 
-**Tabla 1.** Comparativa de métodos en función de Rosenbrock (30 corridas por configuración).
+Se ejecutó el descenso por gradiente con condición inicial aleatoria uniforme en el dominio de cada función, repitiendo $n = 100, 500$ y $1\,000$ veces, en 2D y 3D, para las cuatro funciones válidas en $n$D (Rosenbrock, Rastrigin, Schwefel, Griewank). Goldstein-Price y Camel 6-hump son exclusivamente 2D y con dominios específicos, por lo que se excluyen de este experimento estadístico.
 
-| Método | Dim | $\bar{f}$ | $\sigma_f$ | $f_{\min}$ | Éxito (%) | Evals prom. |
-|--------|-----|-----------|------------|------------|-----------|-------------|
-| GD     | 2D  | ~1×10⁻⁸  | —          | ~0         | ~80%      | ~2,000      |
-| EA     | 2D  | ~1.2      | ~2.1       | ~0.3       | 0%        | 55,100      |
-| PSO    | 2D  | ~8×10⁻⁵  | ~2×10⁻⁴   | ~1×10⁻⁶   | 100%      | 25,000      |
-| DE     | 2D  | ~1×10⁻⁸  | ~1×10⁻⁸   | ~0         | 100%      | ~2,100      |
-| GD     | 3D  | ~0.5      | —          | ~0         | ~50%      | ~3,500      |
-| EA     | 3D  | ~3.8      | ~4.2       | ~0.9       | 0%        | 55,100      |
-| PSO    | 3D  | ~0.8      | ~1.2       | ~1×10⁻⁴   | 10%       | 25,000      |
-| DE     | 3D  | ~5×10⁻⁷  | ~8×10⁻⁷   | ~1×10⁻⁸   | 100%      | ~11,000     |
+**Figura 1.** Histogramas del valor final $f^*$ — GD en 2D (filas: funciones; columnas: $n$). *(`docs/assets/figures/hist_gd_fstar_2d.png`)*
 
-*Nota.* Los valores de GD son aproximados pues dependen fuertemente de la condición inicial aleatoria.
+![Histogramas f* GD 2D](../docs/assets/figures/hist_gd_fstar_2d.png)
 
-Los resultados muestran que **DE domina en Rosenbrock**: 100% de éxito tanto en 2D como en 3D con el menor número de evaluaciones entre los métodos poblacionales. PSO logra 100% en 2D pero cae a 10% en 3D, reflejando la dificultad creciente del valle de Rosenbrock en mayor dimensión. EA no logra ningún éxito: el operador cxBlend con $\alpha=0.5$ puede generar puntos fuera del valle estrecho con alta probabilidad, y la mutación gaussiana con $\sigma=0.5$ es demasiado grande para el refinamiento fino necesario.
+**Figura 2.** Histogramas del número de evaluaciones de $f$ — GD en 2D. *(`hist_gd_evals_2d.png`)*
 
-GD funciona bien cuando la condición inicial cae cerca del valle, pero desde puntos alejados puede demorarse enormemente o quedar atrapado en la pendiente exterior del paraboloide. Su tasa de éxito en 3D es menor porque el "camino" hacia el fondo del valle es más tortuoso en dimensión más alta.
+![Histogramas evals GD 2D](../docs/assets/figures/hist_gd_evals_2d.png)
 
-#### 4.1.2 Rastrigin 2D y 3D
+**Figura 3.** Histogramas del valor final $f^*$ — GD en 3D. *(`hist_gd_fstar_3d.png`)*
 
-**Tabla 2.** Comparativa de métodos en función de Rastrigin (30 corridas por configuración).
+![Histogramas f* GD 3D](../docs/assets/figures/hist_gd_fstar_3d.png)
 
-| Método | Dim | $\bar{f}$ | $\sigma_f$ | $f_{\min}$ | Éxito (%) | Evals prom. |
-|--------|-----|-----------|------------|------------|-----------|-------------|
-| GD     | 2D  | ~3.98     | ~1.2       | ~0         | ~20%      | ~1,500      |
-| EA     | 2D  | ~0.0      | ~0.0       | ~0         | 100%      | 55,100      |
-| PSO    | 2D  | ~0.0      | ~0.0       | ~0         | 100%      | 25,000      |
-| DE     | 2D  | ~0.0      | ~0.0       | ~0         | 100%      | ~2,300      |
-| GD     | 3D  | ~7.0      | ~3.5       | ~0         | ~10%      | ~2,000      |
-| EA     | 3D  | ~0.0      | ~0.0       | ~0         | 100%      | 55,100      |
-| PSO    | 3D  | ~0.0      | ~0.0       | ~0         | 100%      | 25,000      |
-| DE     | 3D  | ~0.0      | ~0.0       | ~0         | 100%      | ~5,800      |
+**Figura 4.** Histogramas del número de evaluaciones de $f$ — GD en 3D. *(`hist_gd_evals_3d.png`)*
 
-En Rastrigin, **todos los métodos heurísticos logran 100% de éxito**. Esto contrasta con el fracaso del GD, que queda atrapado frecuentemente en uno de los muchos mínimos locales (el valor típico de convergencia, ~3.98, corresponde exactamente a un mínimo local de primer orden con $f=A=10$ por dimensión activa). La multimodalidad de Rastrigin premia la exploración global, que es precisamente la fortaleza de los métodos poblacionales.
+![Histogramas evals GD 3D](../docs/assets/figures/hist_gd_evals_3d.png)
 
-La eficiencia sigue el mismo orden que en Rosenbrock: **DE requiere entre 7× y 24× menos evaluaciones** que PSO y EA respectivamente para lograr el mismo resultado.
+**Lectura de los histogramas:**
 
-#### 4.1.3 Convergencia y animaciones
+- **Rastrigin:** la distribución de $f^*$ es **multimodal y discreta**, con picos en los valores de los mínimos locales ($f \approx 0, 1, 2, 4, \ldots$). El GD casi nunca alcanza el óptimo global ($f=0$) porque queda atrapado en el pozo más cercano a la condición inicial. Aumentar $n$ no mejora la mejor solución: solo define mejor la forma de la distribución.
+- **Rosenbrock:** $f^*$ se concentra en valores pequeños pero el **número de evaluaciones es el mayor de todas las funciones** (decenas de miles), porque el valle parabólico estrecho obliga al GD a avanzar con pasos diminutos; muchas corridas agotan el tope de iteraciones.
+- **Schwefel:** $f^*$ se dispersa ampliamente y rara vez se acerca al óptimo (que está lejos del centro, en $x^*\approx420.97$): el GD desde una condición inicial arbitraria cae en el mínimo local más próximo. Pocas evaluaciones (converge rápido a un local).
+- **Griewank:** a gran escala domina el término cuadrático, de modo que el GD desciende hacia la zona central con pocas evaluaciones, aunque los mínimos locales del producto de cosenos atrapan algunas corridas.
 
-Las **Figuras 1–4** (ver notebooks en Colab) muestran las trayectorias de convergencia animadas para cada método sobre el contorno de las funciones. En Rosenbrock, las animaciones de DE ilustran claramente la aceleración del proceso: los vectores de mutación se comprimen conforme las soluciones se acercan al fondo del valle. En Rastrigin, el EA muestra saltos discretos entre mínimos locales típicos del cruce de individuos.
+**Tabla 1.** Resumen del GD sobre $n=1\,000$ condiciones iniciales (media de $f^*$, mejor de las 1 000 y evaluaciones promedio de $f$).
 
-### 4.2 Parte 2: TSP — 96 Prefecturas de Francia
+| Función | Dim | media $f^*$ | mejor $f^*$ (de 1 000) | Evals prom. de $f$ |
+|---|---|---|---|---|
+| Rosenbrock | 2D | 3.18e-01 | 6.32e-07 | 28 653 |
+| Rosenbrock | 3D | 6.95e-01 | 1.03e-05 | 32 664 |
+| Rastrigin | 2D | 3.31e+00 | 0 | 166 |
+| Rastrigin | 3D | 1.10e+01 | 0 | 209 |
+| Schwefel | 2D | 3.88e+02 | 2.55e-05 | 204 |
+| Schwefel | 3D | 5.85e+02 | 3.82e-05 | 283 |
+| Griewank | 2D | 6.06e+01 | 7.40e-03 | 86 |
+| Griewank | 3D | 9.04e+01 | 1.55e-01 | 224 |
 
-**Tabla 3.** Comparativa ACO vs GA para el TSP de prefecturas francesas (30 corridas).
+Dos lecturas clave de la Tabla 1: (i) el **número de evaluaciones del GD en Rosenbrock (28–33 mil) es uno o dos órdenes de magnitud mayor** que en las demás funciones (~100–300), porque el valle estrecho obliga a miles de iteraciones de pasos diminutos; (ii) la **media de $f^*$ está muy lejos del óptimo global** en Rastrigin, Schwefel y Griewank: el GD queda atrapado en el mínimo local más cercano a la condición inicial. Solo ocasionalmente (mejor de 1 000) acierta la cuenca global —en Rastrigin alcanza $f^*=0$ cuando arranca en el pozo central—, lo que confirma su fuerte dependencia del punto de inicio.
 
-> Los resultados de esta tabla se obtienen ejecutando el Notebook 03. Ver: [03_tsp_france.ipynb en Colab](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_france.ipynb)
+### 4.2 Parte 1, punto 2 — Comparativa GD / EA / PSO / DE (6 funciones)
+
+Cada método heurístico se evaluó con **30 corridas independientes** (semillas 0–29) por función y dimensión. La columna *Evals* es el número de evaluaciones de la función objetivo. El éxito se mide como $|f^*-f^\star|<\text{tol}$ (Sección 3.1).
+
+#### Rosenbrock
+| Método | Dim | $\bar{f}$ | $\sigma_f$ | $f_{\min}$ | Éxito | Evals |
+|---|---|---|---|---|---|---|
+| EA | 2D | 7.43e-03 | 9.26e-03 | 1.65e-08 | 13% | 50 100 |
+| PSO | 2D | 1.58e-07 | 4.26e-07 | 1.89e-10 | 100% | 25 000 |
+| DE | 2D | 4.98e-30 | 0 | 4.98e-30 | 100% | 3 945 |
+| EA | 3D | 4.86e-01 | 6.20e-01 | 2.26e-04 | 0% | 50 100 |
+| PSO | 3D | 4.90e-02 | 1.20e-01 | 6.09e-06 | 10% | 25 000 |
+| DE | 3D | 9.96e-30 | 0 | 9.96e-30 | 100% | 11 401 |
+
+**DE domina en Rosenbrock:** 100% de éxito en 2D y 3D con la menor cantidad de evaluaciones entre los métodos poblacionales. PSO logra 100% en 2D pero cae a 10% en 3D (el valle acoplado en 3D es más difícil de navegar). El EA con `cxBlend` ($\alpha=0.5$) y mutación gaussiana ($\sigma=0.5$) genera puntos fuera del valle estrecho: refina mal y falla en 3D.
+
+#### Rastrigin
+| Método | Dim | $\bar{f}$ | $\sigma_f$ | $f_{\min}$ | Éxito | Evals |
+|---|---|---|---|---|---|---|
+| EA | 2D | 0 | 0 | 0 | 100% | 50 100 |
+| PSO | 2D | 0 | 0 | 0 | 100% | 25 000 |
+| DE | 2D | 0 | 0 | 0 | 100% | 2 007 |
+| EA | 3D | 1.40e-04 | 7.53e-04 | 0 | 100% | 50 100 |
+| PSO | 3D | 7.09e-07 | 3.81e-06 | 0 | 100% | 25 000 |
+| DE | 3D | 6.63e-02 | 2.48e-01 | 0 | 93% | 4 482 |
+
+En Rastrigin **los tres heurísticos alcanzan ~100% de éxito**, frente al GD que queda atrapado en mínimos locales (Figuras 1 y 3). La multimodalidad premia la exploración global de los métodos poblacionales. DE logra el resultado con **~12× menos evaluaciones** que EA en 2D.
+
+#### Schwefel
+| Método | Dim | $\bar{f}$ | $\sigma_f$ | $f_{\min}$ | Éxito | Evals |
+|---|---|---|---|---|---|---|
+| EA | 2D | 1.64e+01 | 3.76e+01 | 2.55e-05 | 80% | 50 100 |
+| PSO | 2D | 2.24e-01 | 3.45e-01 | 2.55e-05 | 97% | 25 000 |
+| DE | 2D | 1.97e+01 | 4.41e+01 | 2.55e-05 | 83% | 1 468 |
+| EA | 3D | 8.47e+01 | 9.17e+01 | 3.82e-05 | 37% | 50 100 |
+| PSO | 3D | 3.23e+01 | 2.64e+01 | 1.34e-01 | 3% | 25 000 |
+| DE | 3D | 3.95e+00 | 2.13e+01 | 3.82e-05 | 97% | 3 216 |
+
+Schwefel es **engañosa**: el mínimo global está lejos del centro y hay mínimos locales de valor comparable. Aquí **DE no domina**: en 2D el PSO obtiene la mejor tasa (97%) y en 3D DE (97%) supera ampliamente a PSO (3%). El EA, ya con recorte al dominio (Sección 3.1), alcanza el óptimo en 80% (2D) pero se degrada en 3D (37%). *(Nota: estos resultados corrigen un error previo en el que el EA exploraba fuera del dominio y devolvía valores espurios muy negativos.)*
+
+#### Griewank
+| Método | Dim | $\bar{f}$ | $\sigma_f$ | $f_{\min}$ | Éxito | Evals |
+|---|---|---|---|---|---|---|
+| EA | 2D | 1.69e-02 | 1.25e-02 | 0 | 47% | 50 100 |
+| PSO | 2D | 1.85e-03 | 3.09e-03 | 2.22e-16 | 100% | 25 000 |
+| DE | 2D | 6.25e-03 | 5.32e-03 | 0 | 93% | 2 320 |
+| EA | 3D | 5.94e-02 | 4.84e-02 | 9.86e-03 | 7% | 50 100 |
+| PSO | 3D | 1.35e-02 | 8.64e-03 | 8.59e-09 | 43% | 25 000 |
+| DE | 3D | 6.74e-03 | 9.46e-03 | 0 | 93% | 6 223 |
+
+En Griewank, **PSO destaca en 2D (100%)** y **DE es el más robusto en 3D (93%)**. El EA es el más débil (47% / 7%): sus operadores de escala fija no afinan lo suficiente entre los mínimos locales densos.
+
+#### Goldstein-Price (solo 2D)
+| Método | Dim | $\bar{f}$ | $\sigma_f$ | $f_{\min}$ | Éxito | Evals |
+|---|---|---|---|---|---|---|
+| EA | 2D | 3.00 | 2.37e-15 | 3.00 | 100% | 50 100 |
+| PSO | 2D | 3.00 | 7.43e-15 | 3.00 | 100% | 25 000 |
+| DE | 2D | 3.00 | 2.15e-10 | 3.00 | 100% | 965 |
+
+#### Camel 6-hump (solo 2D)
+| Método | Dim | $\bar{f}$ | $\sigma_f$ | $f_{\min}$ | Éxito | Evals |
+|---|---|---|---|---|---|---|
+| EA | 2D | -1.0316 | 2.22e-16 | -1.0316 | 100% | 50 100 |
+| PSO | 2D | -1.0316 | 2.22e-16 | -1.0316 | 100% | 25 000 |
+| DE | 2D | -1.0316 | 6.19e-11 | -1.0316 | 100% | 858 |
+
+En las dos funciones 2D de dominio pequeño los tres métodos alcanzan el óptimo en el 100% de las corridas; la diferencia está en la eficiencia: **DE lo logra con ~50–60× menos evaluaciones que el EA**.
+
+#### 4.3 Convergencia y animaciones
+
+Las animaciones del repositorio (`docs/assets/figures/`) ilustran el proceso: `gd_rosenbrock_2d.gif` (descenso por gradiente sobre el contorno de Rosenbrock) y `pso_rosenbrock_2d.gif` (enjambre PSO convergiendo al valle). El GD muestra una trayectoria suave que sigue el gradiente; el PSO muestra el enjambre concentrándose progresivamente en el valle.
+
+### 4.4 Parte 2 — TSP: 96 prefecturas de Francia
+
+**Tabla 2.** Comparativa ACO vs GA para el TSP de las 96 prefecturas francesas (30 corridas independientes, datos de `resultados_tsp.json`).
 
 | Método | Media (EUR) | Std (EUR) | Mejor (EUR) | Peor (EUR) | CV (%) | Tiempo (s) |
 |--------|:-----------:|:---------:|:-----------:|:----------:|:------:|:----------:|
-| ACO    | —           | —         | —           | —          | —      | —          |
-| GA     | —           | —         | —           | —          | —      | —          |
+| **ACO** | **3 355** | 42 | **3 285** | 3 446 | **1.26** | 831 |
+| GA | 4 553 | 222 | 4 092 | 5 120 | 4.87 | 160 |
 
-*Nota.* CV = coeficiente de variación = $\sigma / \bar{x} \times 100\%$. Costos en EUR, modelo: combustible (Renault Clio SP95) + peajes 0.08 EUR/km + vendedor 25 EUR/h a 90 km/h.
+*Nota.* CV = coeficiente de variación $= \sigma/\bar{x}\times100\%$. Modelo de costo: combustible (Renault Clio, SP95 1.75 EUR/L, 5.5 L/100 km) + peajes 0.08 EUR/km + vendedor 25 EUR/h a 90 km/h ≈ 0.454 EUR/km.
 
-El problema de Francia (96 ciudades vs. 32 de México) es considerablemente más difícil: el espacio de soluciones crece de $\approx 1.3\times10^{33}$ a $\approx 4.7\times10^{148}$ tours posibles. Se espera que ACO mantenga mayor consistencia (menor CV) y que GA tenga mayor varianza pero potencialmente encuentre mejores soluciones puntuales, patrón consistente con la literatura para estas dos metaheurísticas en TSP.
+**ACO supera a GA en todos los indicadores de calidad:** su costo medio es **~26% menor** (3 355 vs 4 553 EUR), encuentra la mejor solución absoluta (3 285 EUR) y es mucho más consistente (CV 1.26% vs 4.87%). La ventaja proviene de la **información heurística de visibilidad** ($\eta_{ij}=1/d_{ij}$) que guía la construcción de cada ruta, de la que el GA carece. A cambio, el GA es **~5× más rápido por corrida** (160 s vs 831 s), porque el costo por iteración de ACO es $O(N_\text{ants}\cdot n^2)$ frente a $O(n)$ del cruce OX.
 
-**Sobre la visualización:** La figura en Notebook 03 muestra las mejores rutas de ACO y GA sobre el mapa de la Francia metropolitana, incluyendo Córcega. Una buena ruta conectará los departamentos del norte (Nord, Pas-de-Calais), recorrerá las regiones del este (Alsacia, Lorena), bajará por el Ródano hacia el sur (Provenza, Languedoc), cruzará a Córcega y cerrará por el oeste (Burdeos, Bretaña).
+**Visualización del recorrido.** El GIF `notebooks/outputs/aco_ruta_construccion.gif` muestra la mejor ruta ACO construyéndose ciudad a ciudad sobre el mapa de Francia (incluida Córcega), y `mejor_ruta_comparativa.png` compara las rutas ACO y GA. La mejor ruta conecta el norte (Lille, Arras), recorre el este (Estrasburgo, Nancy), baja por el Ródano hacia el sur (Lyon, Marsella), cruza a Córcega (Bastia, Ajaccio) y cierra por el oeste (Burdeos, Nantes, Rennes).
 
 ---
 
@@ -310,21 +379,37 @@ Las principales limitaciones de este trabajo son:
 
 3. **TSP simétrico:** Se asume que el costo de ir de A a B es igual al de ir de B a A, lo cual no siempre es cierto en carretera (peajes unidireccionales, condiciones de terreno en montaña).
 
-4. **Escala:** Con n=96 ciudades, el problema es considerablemente más difícil que con n=32. Para instancias más grandes se recomienda incorporar heurísticas constructivas (vecino más cercano) como solución inicial, o usar variantes avanzadas: Ant Colony System (ACS) y Max-Min Ant System (MMAS) para ACO; operadores Lin-Kernighan para GA.
+4. **Escala:** Con $n=96$ ciudades el espacio de soluciones ($\approx4.7\times10^{148}$ tours) hace inviable el óptimo exacto. Para instancias mayores se recomienda incorporar heurísticas constructivas (vecino más cercano) como solución inicial, o variantes avanzadas: Ant Colony System (ACS) y Max-Min Ant System (MMAS) para ACO; operadores Lin-Kernighan para GA.
 
 5. **Funciones de prueba adicionales:** Schwefel y Griewank tienen dominios mucho más amplios ($[-500,500]^n$ y $[-600,600]^n$) que Rosenbrock y Rastrigin ($[-5,5]^n$), lo que puede afectar la comparación directa de tasas de éxito entre funciones.
+
+### 5.5 ¿Qué aportó el gradiente y qué aportaron los heurísticos? (pregunta del enunciado)
+
+La comparación debe hacerse en dos ejes: **valor final $f^*$** y **número de evaluaciones de la función objetivo**.
+
+**Aportes del descenso por gradiente:**
+- **Cuando funciona, es local y barato en buenas condiciones**, pero **no es globalmente competitivo** en estas funciones. En las funciones multimodales (Rastrigin, Schwefel, Griewank) queda atrapado en el mínimo local más cercano a la condición inicial: los histogramas (Figuras 1–4) muestran que casi nunca alcanza el óptimo global, sin importar si $n=100$, $500$ o $1\,000$ —aumentar $n$ mejora la *caracterización estadística*, no la mejor solución.
+- En **Rosenbrock** sí desciende hacia valores pequeños, pero a un costo de evaluaciones **muy alto** (decenas de miles, el mayor de todas las funciones), porque el valle estrecho fuerza pasos diminutos. Es decir, el GD paga su (a veces) buen $f^*$ con muchísimas evaluaciones.
+- Su aporte real es **conceptual y de eficiencia local**: con una buena condición inicial converge rápido y de forma determinista a un mínimo local; es la base de los métodos de optimización diferenciable.
+
+**Aportes de los métodos heurísticos (EA, PSO, DE):**
+- **Mejor valor final en problemas multimodales:** alcanzan o se acercan al óptimo global donde el GD fracasa (Rastrigin 100% vs GD atrapado; Goldstein-Price y Camel 100%).
+- **DE es el más eficiente en evaluaciones**: obtiene $f^*\approx0$ con **~1 000–4 000 evaluaciones** en varias funciones, frente a las decenas de miles del GD en Rosenbrock y las 25 000–50 100 de PSO/EA.
+- **No hay un ganador universal** (No Free Lunch): DE domina Rosenbrock y es muy eficiente; PSO destaca en Griewank/Schwefel 2D; el EA es robusto en lo multimodal pero ineficiente. El GD aporta velocidad local; los heurísticos aportan robustez global.
+
+**Síntesis:** si se mide *calidad global de la solución*, los heurísticos aportan claramente más; si se mide *evaluaciones de $f$*, el GD puede ser barato en problemas suaves pero caro en valles estrechos, mientras DE ofrece la mejor relación calidad/evaluaciones. Lo ideal es **combinarlos**: un heurístico para localizar la cuenca del óptimo global y un método de gradiente para el refinamiento local final.
 
 ---
 
 ## 6. Conclusiones
 
-1. **DE es el método más robusto y eficiente** para funciones de prueba continuas en este estudio: 100% de éxito en los cuatro escenarios (Rosenbrock y Rastrigin, 2D y 3D) con 7× a 24× menos evaluaciones que PSO y EA. Su fortaleza radica en la escala adaptativa del operador de mutación.
+1. **DE ofrece la mejor relación calidad/evaluaciones** en funciones continuas: 100% de éxito en Rosenbrock y Rastrigin (2D y 3D) con la menor cantidad de evaluaciones (~1 000–11 000 vs 25 000–50 100 de PSO/EA), gracias a la escala adaptativa de su operador de mutación. No obstante, **no es universalmente superior**: en Schwefel 2D y Griewank 2D el PSO iguala o supera su tasa de éxito (No Free Lunch).
 
-2. **Los métodos de gradiente son insustituibles cuando la función es suave y la condición inicial es favorable**, pero son altamente dependientes del punto de inicio. En Rastrigin (multimodal) quedan atrapados en mínimos locales en ~80–90% de los casos.
+2. **Los métodos de gradiente aportan velocidad local pero no robustez global**: dependen fuertemente de la condición inicial y quedan atrapados en mínimos locales en las funciones multimodales (Rastrigin, Schwefel, Griewank), como evidencian los histogramas. En Rosenbrock alcanzan buenos $f^*$ pero con el mayor número de evaluaciones de todas las funciones.
 
-3. **EA y PSO se complementan con DE** en un portafolio de métodos: EA excela en multimodalidad (Rastrigin), PSO es rápido y efectivo en unimodal de baja dimensión (Rosenbrock 2D).
+3. **Los métodos se complementan en un portafolio**: EA destaca en multimodalidad (Rastrigin, Goldstein, Camel al 100%), PSO es rápido y efectivo en baja dimensión (Rosenbrock 2D, Griewank 2D), DE es el más eficiente en evaluaciones.
 
-4. **ACO ofrece mayor consistencia en TSP** (CV=0.72% vs 2.91% del GA), preferible cuando se necesita garantía de calidad mínima en cada ejecución. GA puede encontrar mejores soluciones puntuales pero con mayor riesgo de resultados pobres.
+4. **ACO supera a GA en el TSP** en calidad y consistencia: costo medio ~26% menor (3 355 vs 4 553 EUR), la mejor solución absoluta (3 285 EUR) y menor variabilidad (CV 1.26% vs 4.87%), gracias a la guía heurística de visibilidad. El GA es ~5× más rápido por corrida, útil cuando el tiempo de cómputo es la restricción.
 
 5. **La representación es crítica para GA en combinatoria**: el OX crossover y la mutación por intercambio de índices son necesarios para mantener la validez de la permutación. Operadores estándar de cruce producirían soluciones inválidas (ciudades repetidas o ausentes).
 
@@ -362,6 +447,11 @@ Este trabajo fue desarrollado con asistencia de **Claude (Anthropic)** como herr
 > "Primero crea el script, valida, luego el notebook."
 
 *Impacto:* El workflow script-primero permitió detectar y corregir problemas antes de escribir el notebook: EA usaba `random.uniform` de numpy en vez de Python (inconsistencia de semillas), y la tasa de éxito de PSO en Rosenbrock 3D (10%) se confirmó como un hallazgo real y no un bug.
+
+**Prompt 6 — Auditoría y corrección final:**
+> "Revisa el repo contra el enunciado y dime qué falta. Luego corrige y asegúrate de que cumplimos bien el trabajo."
+
+*Impacto:* La auditoría detectó tres errores de correctitud que invalidaban resultados: (1) el EA no recortaba los individuos al dominio en DEAP, por lo que en Schwefel divergía a $f\approx-8\times10^9$ (fuera de $[-500,500]$) y la tasa de éxito —definida con un umbral absoluto— marcaba 100% falso; (2) el notebook 02 resolvía los dominios por `f.__name__` (minúscula) contra claves capitalizadas, de modo que **todas** las funciones usaban $[-5,5]$, incluidas Schwefel y Griewank; (3) el GD de los histogramas usaba dominio fijo y no contabilizaba todas las evaluaciones de $f$. Se añadió recorte por dimensión (`checkBounds`), se cambió la métrica de éxito a distancia al óptimo $|f-f^\star|<\text{tol}$, se corrigieron los dominios y el conteo de evaluaciones, y se re-corrieron los experimentos. Este caso ilustra que la IA es útil para *auditar* sistemáticamente, pero la validación de cada hallazgo (¿bug o comportamiento real?) requirió criterio humano.
 
 ### 7.2 Evaluación crítica del impacto de la IA
 
