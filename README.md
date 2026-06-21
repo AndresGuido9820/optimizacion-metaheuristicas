@@ -12,7 +12,7 @@
 **Universidad Nacional de Colombia** · 2026
 **Autores:** Andrés F. Guido Montoya · Juan José Martínez · Andrés Lemus
 
-[Reporte completo](https://docs.google.com/document/d/1eQcFLAz5GOUN9K0MFBEfZ_peTL8IftK03j1gI9b6te0/edit?usp=sharing) · [Notebook 01](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb) · [Notebook 02](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/02_heuristicos_comparativa.ipynb) · [Notebook 03](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_france.ipynb)
+[Sitio (GitHub Pages)](https://andresguido9820.github.io/optimizacion-metaheuristicas/) · [Reporte completo](https://andresguido9820.github.io/optimizacion-metaheuristicas/reporte.html) · [Notebook 01](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/01_funciones_gradiente.ipynb) · [Notebook 02](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/02_heuristicos_comparativa.ipynb) · [Notebook 03](https://colab.research.google.com/github/AndresGuido9820/optimizacion-metaheuristicas/blob/main/notebooks/03_tsp_france.ipynb)
 
 </div>
 
@@ -59,8 +59,8 @@ Diseño experimental
 └── Validez estadística: TCL con N=30 permite prueba t de Student
 
 Parte 1 — Funciones continuas
-├── GD:  gradiente numérico (diferencias centrales h=1e-5) + Armijo (c=1e-4, β=0.5)
-├── EA:  DEAP · cxBlend(α=0.5) · mutGaussian(σ=0.5) · torneo k=3 · 100 ind. · 500 gen.
+├── GD:  gradiente numérico (dif. centrales h=1e-5) + Armijo (c=1e-4, β=0.5), proyectado al dominio
+├── EA:  DEAP · cxBlend(α=0.5) · mutGaussian(σ=0.5) · torneo k=3 · recorte al dominio · 100 ind. · 500 gen.
 ├── PSO: pyswarms · w=0.729 (Clerc-Kennedy) · c1=c2=2.05 · 50 partículas · 500 iter.
 └── DE:  scipy best1bin · F∈[0.5,1.0] adaptativo · CR=0.7 · popsize=15 · maxiter=1000
 
@@ -108,7 +108,11 @@ optimizacion-metaheuristicas/
 │   └── ai_prompts_log.md
 │
 ├── scripts/
-│   └── heuristicos.py                  ← Script de validación Parte 1 (línea de comandos)
+│   ├── heuristicos.py                  ← EA/PSO/DE sobre las 6 funciones → resultados_heuristicos.json
+│   ├── histogramas_gd.py               ← GD proyectado: histogramas n=100/500/1000 → docs/assets/figures
+│   ├── figuras_comparativa.py          ← figuras de éxito y evaluaciones del sitio
+│   ├── sync_site_data.py               ← sincroniza tablas de docs/index.html con los JSON
+│   └── tsp_france.py                   ← ACO + GA sobre las 96 prefecturas → resultados_tsp.json
 │
 ├── requirements.txt
 └── LICENSE

@@ -12,7 +12,7 @@ El espacio de búsqueda tiene $(n-1)!/2$ tours posibles (se fija la ciudad de in
 
 $$(95)!/2 \approx 4.7 \times 10^{148} \text{ tours posibles}$$
 
-La enumeración exacta es completamente inviable. El TSP es NP-difícil: no se conoce algoritmo polinomial garantizado. El problema de Francia (n=96) es considerablemente más difícil que el de México (n=32): el espacio de búsqueda crece en $\sim 10^{115}$ órdenes de magnitud.
+La enumeración exacta es completamente inviable. El TSP es NP-difícil: no se conoce algoritmo polinomial garantizado, por lo que se recurre a metaheurísticas (ACO, GA) que entregan soluciones de alta calidad en tiempo razonable sin garantía de optimalidad.
 
 ### 1.2 Modelo de costo para Francia
 
@@ -130,7 +130,7 @@ Hijo A:   [2, 1, 3, 4, 5, 6]      <- permutación válida
 | Riesgo de estancamiento | Alto si $\rho$ es pequeño | Bajo por diversidad genética |
 | Velocidad (por iteración) | Lenta con $n=96$ ($O(n^2)$ por ruta) | Más rápida (OX crossover es $O(n)$) |
 
-Para $n=96$, la mayor complejidad de ACO por iteración sugiere que GA puede explorar más soluciones en el mismo tiempo de cómputo, lo que podría darle ventaja en encontrar buenas soluciones absolutas.
+Para $n=96$, la mayor complejidad de ACO por iteración hace que GA explore más soluciones en el mismo tiempo. Sin embargo, los resultados experimentales (ver reporte, §4.4) muestran que la **información heurística de visibilidad** ($\eta_{ij}=1/d_{ij}$) y la memoria de feromona dan a ACO una ventaja clara en calidad: ACO obtiene tanto la mejor solución absoluta como la menor variabilidad. GA, sin guía heurística constructiva, converge a tours de mayor costo.
 
 ---
 

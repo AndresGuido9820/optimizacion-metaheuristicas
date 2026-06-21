@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Reporte tecnico — Optimizacion Metaheuristica</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+  :root { --fg:#1b1c1e; --muted:#5b6168; --line:#d7dce3; --accent:#386A20; --bg:#ffffff; --soft:#f3f6f9; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+         line-height:1.65; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 32px 20px 80px; }
+  .topbar { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line);
+            padding:10px 20px; display:flex; gap:18px; align-items:center; font-size:14px; z-index:5; }
+  .topbar a { color:var(--accent); text-decoration:none; font-weight:600; }
+  .topbar a:hover { text-decoration:underline; }
+  h1 { font-size:1.9rem; line-height:1.25; margin:1.2em 0 .5em; }
+  h2 { font-size:1.45rem; margin:1.6em 0 .5em; padding-bottom:.2em; border-bottom:2px solid var(--line); }
+  h3 { font-size:1.2rem; margin:1.3em 0 .4em; }
+  h4 { font-size:1.05rem; margin:1.1em 0 .3em; color:var(--muted); }
+  p, li { font-size:1rem; }
+  a { color:var(--accent); }
+  img { max-width:100%; height:auto; display:block; margin:1em auto; border:1px solid var(--line); border-radius:6px; }
+  table { border-collapse:collapse; width:100%; margin:1em 0; font-size:.9rem; display:block; overflow-x:auto; }
+  th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; }
+  thead th { background:var(--soft); }
+  tbody tr:nth-child(even) { background:var(--soft); }
+  code { background:var(--soft); padding:1px 5px; border-radius:4px; font-size:.88em; }
+  pre { background:#1e293b; color:#e2e8f0; padding:14px 16px; border-radius:8px; overflow-x:auto; }
+  pre code { background:transparent; color:inherit; padding:0; }
+  blockquote { border-left:4px solid var(--accent); margin:1em 0; padding:.4em 1em; background:var(--soft); color:var(--muted); }
+  hr { border:none; border-top:1px solid var(--line); margin:2em 0; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="index.html">&larr; Sitio del proyecto</a>
+  <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas" target="_blank">Repositorio</a>
+</div>
+<div class="wrap">
+<h1 id="optimizacion-heuristica-comparativa-de-metaheuristicas-en-funciones-de-prueba-y-el-problema-del-agente-viajero-para-los-departamentos-de-francia">Optimización Heurística: Comparativa de Metaheurísticas en Funciones de Prueba y el Problema del Agente Viajero para los Departamentos de Francia</h1>
+<p><strong>Curso:</strong> Optimización
+<strong>Profesor:</strong> Juan David Ospina Arango
+<strong>Universidad:</strong> Universidad Nacional de Colombia
+<strong>Autores:</strong> Andrés F. Guido Montoya · Juan José Martínez · Andrés Lemus
+<strong>Fecha:</strong> Junio de 2026
+<strong>Repositorio:</strong> https://github.com/AndresGuido9820/optimizacion-metaheuristicas</p>
+<hr />
+<h2 id="resumen">Resumen</h2>
+<p>Este trabajo presenta una comparativa experimental de cuatro algoritmos de optimización —descenso por gradiente (GD), algoritmos evolutivos (EA), optimización por enjambre de partículas (PSO) y evolución diferencial (DE)— aplicados a <strong>seis funciones de prueba clásicas</strong> (Rosenbrock, Rastrigin, Schwefel, Griewank, Goldstein-Price y Camel 6-hump) en dimensiones 2D y 3D. Para GD se realizan n = 100, 500 y 1 000 repeticiones con condición inicial aleatoria, registrando histogramas del valor final f<em> y del número de evaluaciones. Para los métodos heurísticos se realizan 30 corridas independientes por configuración. Adicionalmente, se resuelve el Problema del Agente Viajero (TSP) para las </em><em>96 prefecturas de los departamentos de la Francia metropolitana</em>* utilizando colonias de hormigas (ACO) y algoritmos genéticos (GA), con un modelo de costo que incorpora combustible, peajes y tiempo del vendedor en EUR.</p>
+<p><strong>Palabras clave:</strong> metaheurísticas, evolución diferencial, colonias de hormigas, TSP, Rosenbrock, Rastrigin, optimización bio-inspirada.</p>
+<hr />
+<h2 id="1-introduccion">1. Introducción</h2>
+<p>La optimización es una disciplina transversal a la ingeniería, la economía y las ciencias computacionales. Su objetivo formal es encontrar el valor de un vector de variables $\mathbf{x}^* \in \mathbb{R}^n$ que minimiza (o maximiza) una función objetivo $f: \mathbb{R}^n \to \mathbb{R}$, posiblemente sujeto a restricciones. Cuando $f$ es diferenciable y convexa, los métodos de gradiente garantizan convergencia al óptimo global. Sin embargo, la mayoría de los problemas reales son no convexos, multimodales, discontinuos o de alta dimensionalidad, condiciones bajo las cuales los métodos clásicos fallan sistemáticamente.</p>
+<p>Las <strong>metaheurísticas</strong> surgen como respuesta a esta limitación. Son estrategias de búsqueda de alto nivel, inspiradas frecuentemente en fenómenos naturales, que sacrifican garantías de optimalidad a cambio de encontrar soluciones de alta calidad en tiempos computacionales razonables (Blum &amp; Roli, 2003). Su popularidad ha crecido exponencialmente desde los años 1980: los algoritmos evolutivos emergieron de los trabajos de Holland (1975) y Goldberg (1989), el PSO fue propuesto por Kennedy y Eberhart (1995), la evolución diferencial por Storn y Price (1997), y las colonias de hormigas por Dorigo (1992) en su tesis doctoral.</p>
+<p>Este trabajo tiene dos objetivos complementarios:</p>
+<ol>
+<li>
+<p><strong>Parte 1:</strong> Comparar GD, EA, PSO y DE sobre seis funciones de prueba clásicas en 2D y 3D. GD se evalúa con n = 100/500/1 000 condiciones iniciales (histogramas); los heurísticos con 30 corridas independientes.</p>
+</li>
+<li>
+<p><strong>Parte 2:</strong> Resolver el TSP para las 96 prefecturas de los departamentos de la Francia metropolitana con ACO y GA, minimizando un modelo de costo que combina combustible, peajes y tiempo del vendedor en EUR.</p>
+</li>
+</ol>
+<p>El trabajo fue implementado enteramente en Python, los notebooks están disponibles en Google Colab y el código fuente en el repositorio público indicado al inicio.</p>
+<hr />
+<h2 id="2-marco-teorico">2. Marco Teórico</h2>
+<h3 id="21-funciones-de-prueba">2.1 Funciones de prueba</h3>
+<p>Las funciones de prueba son herramientas estándar para evaluar algoritmos de optimización en condiciones controladas y reproducibles. En este trabajo se utilizan seis funciones de la literatura:</p>
+<h4 id="211-funcion-de-rosenbrock">2.1.1 Función de Rosenbrock</h4>
+<p>Propuesta por Rosenbrock (1960), es una función unimodal no convexa definida como:</p>
+<p>$$f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[ 100(x_{i+1} - x_i^2)^2 + (1 - x_i)^2 \right]$$</p>
+<p>El óptimo global es $f(\mathbf{1}) = 0$ en $\mathbf{x}^* = (1, 1, \ldots, 1)$. La dificultad radica en un <strong>valle parabólico estrecho y curvado</strong>: el gradiente a lo largo del fondo del valle es casi nulo, por lo que los algoritmos de gradiente convergen extremadamente lento una vez dentro del valle. Válida en $[-5, 5]^n$ para 2D y 3D.</p>
+<h4 id="212-funcion-de-rastrigin">2.1.2 Función de Rastrigin</h4>
+<p>Introducida por Rastrigin (1974), es una función altamente multimodal:</p>
+<p>$$f(\mathbf{x}) = An + \sum_{i=1}^{n} \left[ x_i^2 - A \cos(2\pi x_i) \right], \quad A = 10$$</p>
+<p>El óptimo global es $f(\mathbf{0}) = 0$. Contiene $\approx 10^n$ mínimos locales en $[-5, 5]^n$, todos a distancia comparable en valor de función. Es el estándar para evaluar la capacidad de escapar de mínimos locales.</p>
+<h4 id="213-funcion-de-schwefel">2.1.3 Función de Schwefel</h4>
+<p>Propuesta por Schwefel (1981):</p>
+<p>$$f(\mathbf{x}) = 418.9829\,n - \sum_{i=1}^{n} x_i \sin\!\left(\sqrt{|x_i|}\right)$$</p>
+<p>El óptimo global es $f(420.97, \ldots) \approx 0$ en el dominio $[-500, 500]^n$. Su característica más importante es que el mínimo global se encuentra <strong>lejos del centro del dominio</strong> y los mínimos locales secundarios tienen valores de función comparables, lo que engaña fácilmente a los métodos de gradiente y a los heurísticos sin suficiente exploración.</p>
+<h4 id="214-funcion-de-griewank">2.1.4 Función de Griewank</h4>
+<p>Propuesta por Griewank (1981):</p>
+<p>$$f(\mathbf{x}) = 1 + \frac{1}{4000}\sum_{i=1}^{n} x_i^2 - \prod_{i=1}^{n} \cos\!\left(\frac{x_i}{\sqrt{i}}\right)$$</p>
+<p>El óptimo global es $f(\mathbf{0}) = 0$ en $[-600, 600]^n$. La función combina una parábola de baja curvatura (que orienta la búsqueda hacia el origen) con un término producto de cosenos que genera mínimos locales <strong>uniformemente distribuidos</strong> por todo el dominio. La interacción entre ambos términos hace que los mínimos locales desaparezcan a mayor escala, favoreciendo los métodos de exploración global.</p>
+<h4 id="215-funcion-de-goldstein-price-solo-2d">2.1.5 Función de Goldstein-Price (solo 2D)</h4>
+<p>Definida para $\mathbf{x} \in [-2, 2]^2$:</p>
+<p>$$f(\mathbf{x}) = \left[1 + (x_1+x_2+1)^2 P_1\right]\cdot\left[30 + (2x_1-3x_2)^2 P_2\right]$$</p>
+<p>donde $P_1$ y $P_2$ son polinomios de grado 2 en $x_1, x_2$. El óptimo global es $f(0,-1) = 3$. La función tiene un paisaje muy irregular con múltiples mínimos locales en un dominio pequeño.</p>
+<h4 id="216-funcion-de-las-seis-jorobas-de-camello-camel-6-hump-solo-2d">2.1.6 Función de las seis jorobas de camello (Camel 6-hump, solo 2D)</h4>
+<p>Definida para $x_1 \in [-3, 3],\; x_2 \in [-2, 2]$:</p>
+<p>$$f(\mathbf{x}) = \left(4 - 2.1x_1^2 + \frac{x_1^4}{3}\right)x_1^2 + x_1 x_2 + (-4 + 4x_2^2)x_2^2$$</p>
+<p>Tiene <strong>dos mínimos globales simétricos</strong>: $f(0.0898, -0.7126) = f(-0.0898, 0.7126) \approx -1.0316$, y seis mínimos locales (las "jorobas"). Es útil para evaluar si un algoritmo puede encontrar ambos mínimos globales o si queda atrapado en uno de los locales.</p>
+<h3 id="22-descenso-por-gradiente-con-busqueda-en-linea">2.2 Descenso por gradiente con búsqueda en línea</h3>
+<p>El descenso por gradiente es el método iterativo fundamental de optimización diferenciable:</p>
+<p>$$\mathbf{x}_{k+1} = \mathbf{x}_k - \alpha_k \nabla f(\mathbf{x}_k)$$</p>
+<p>El paso $\alpha_k$ se determina mediante <strong>búsqueda en línea con retroceso (backtracking)</strong> basada en la condición de Armijo:</p>
+<p>$$f(\mathbf{x}_k - \alpha \nabla f(\mathbf{x}_k)) \leq f(\mathbf{x}_k) - c \cdot \alpha \|\nabla f(\mathbf{x}_k)\|^2$$</p>
+<p>con $c = 10^{-4}$ y factor de reducción $\beta = 0.5$, comenzando con $\alpha_0 = 1.0$. Este esquema garantiza descenso suficiente sin requerir una búsqueda exacta (Nocedal &amp; Wright, 2006). El gradiente se aproxima numéricamente con diferencias finitas centrales de orden $O(h^2)$, con $h = 10^{-5}$.</p>
+<h3 id="23-algoritmos-evolutivos-ea">2.3 Algoritmos Evolutivos (EA)</h3>
+<p>Los algoritmos evolutivos están inspirados en la selección natural darwiniana (Holland, 1975). Operan sobre una <strong>población</strong> de soluciones candidatas y aplican iterativamente tres operadores:</p>
+<ul>
+<li><strong>Selección:</strong> Se elige a los individuos más aptos para reproducirse. Aquí se usa <strong>selección por torneo</strong> con $k=3$: se eligen 3 individuos al azar y se preserva el mejor.</li>
+<li><strong>Cruce (cxBlend):</strong> Propuesto por Eshelman y Schaffer (1993), genera hijos interpolando (y extrapolando con probabilidad $\alpha=0.5$) entre dos padres: $c_i = x_i + U(-\alpha, 1+\alpha)(y_i - x_i)$.</li>
+<li><strong>Mutación:</strong> Se agrega ruido gaussiano $\mathcal{N}(0, \sigma^2)$ con $\sigma=0.5$ y probabilidad $p_{\text{indpb}}=0.2$ por componente.</li>
+</ul>
+<p>La implementación utiliza DEAP (Fortin et al., 2012) con parámetros $N_{\text{pop}}=100$, $N_{\text{gen}}=500$, $p_{\text{cx}}=0.7$, $p_{\text{mut}}=0.2$.</p>
+<h3 id="24-optimizacion-por-enjambre-de-particulas-pso">2.4 Optimización por Enjambre de Partículas (PSO)</h3>
+<p>Propuesto por Kennedy y Eberhart (1995), el PSO modela una bandada de pájaros buscando alimento. Cada partícula $i$ tiene posición $\mathbf{x}_i$ y velocidad $\mathbf{v}_i$ que se actualiza según:</p>
+<p>$$\mathbf{v}_i \leftarrow w\mathbf{v}_i + c_1 r_1 (\mathbf{p}_i - \mathbf{x}_i) + c_2 r_2 (\mathbf{g} - \mathbf{x}_i)$$</p>
+<p>$$\mathbf{x}_i \leftarrow \mathbf{x}_i + \mathbf{v}_i$$</p>
+<p>donde $\mathbf{p}_i$ es la mejor posición personal de la partícula y $\mathbf{g}$ la mejor posición global del enjambre. Los coeficientes $c_1 = c_2 = 2.05$ son los factores de aceleración cognitivo y social respectivamente. El peso inercial $w = 0.729$ corresponde al <strong>factor de constricción de Clerc y Kennedy</strong> (2002), que garantiza convergencia teórica del enjambre. Se usa pyswarms (Miranda, 2018) con $N=50$ partículas y 500 iteraciones.</p>
+<h3 id="25-evolucion-diferencial-de">2.5 Evolución Diferencial (DE)</h3>
+<p>Propuesta por Storn y Price (1997), la DE es una metaheurística para espacios continuos particularmente eficiente. Para cada individuo objetivo $\mathbf{x}_i$, genera un <strong>mutante</strong> combinando tres individuos aleatorios distintos:</p>
+<p>$$\mathbf{v}_i = \mathbf{x}_{r_1} + F(\mathbf{x}_{r_2} - \mathbf{x}_{r_3})$$</p>
+<p>donde $F \in [0.5, 1.0]$ es el factor de mutación adaptativo. Luego aplica <strong>cruce binomial</strong> con probabilidad $CR = 0.7$ para generar el trial vector $\mathbf{u}_i$, y selecciona el mejor entre $\mathbf{x}_i$ y $\mathbf{u}_i$ (estrategia <code>best1bin</code>). La implementación usa <code>scipy.optimize.differential_evolution</code> con <code>popsize=15</code>, <code>maxiter=1000</code> y <code>tol=1e-7</code>.</p>
+<p>La clave del éxito de la DE en Rosenbrock es que el factor de mutación $F$ <strong>escala adaptativamente con la magnitud de las diferencias</strong>: cuando las partículas están cerca del óptimo y el valle es estrecho, $F(\mathbf{x}_{r_2} - \mathbf{x}_{r_3})$ se vuelve pequeño automáticamente, permitiendo una búsqueda fina sin requerir ajuste manual del tamaño de paso.</p>
+<h3 id="26-problema-del-agente-viajero-tsp">2.6 Problema del Agente Viajero (TSP)</h3>
+<p>El TSP es uno de los problemas de optimización combinatoria más estudiados en la historia de la computación (Applegate et al., 2006). Dado un conjunto de $n$ ciudades con distancias $d_{ij}$ entre pares, se busca la permutación $\pi^*$ de las ciudades que minimiza el costo total del recorrido cerrado:</p>
+<p>$$\min_{\pi} C(\pi) = \sum_{i=0}^{n-1} d(\pi_i, \pi_{i+1 \bmod n})$$</p>
+<p>El espacio de búsqueda tiene $(n-1)!/2$ tours posibles; para $n=96$ esto equivale a $\approx 4.7 \times 10^{148}$ combinaciones, haciendo la enumeración exacta completamente inviable. Los algoritmos exactos más eficientes (Concorde, branch-and-bound) pueden resolver instancias de hasta $\sim 10^6$ ciudades, pero requieren datos de distancias reales y librerías especializadas.</p>
+<h4 id="modelo-de-costo-para-francia">Modelo de costo para Francia</h4>
+<p>En este trabajo el costo no es solo distancia, sino un modelo económico realista:</p>
+<p>$$C(\pi) = \sum_{i=0}^{95} d(\pi_i, \pi_{i+1 \bmod 96}) \cdot \left( c_{\text{km}} + \frac{c_{\text{hora}}}{v} \right)$$</p>
+<p><strong>Vehículo de referencia:</strong> Renault Clio 1.0 TCe (consumo 5.5 L/100 km en carretera).</p>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Combustible</td>
+<td>$\approx 0.096$ EUR/km</td>
+<td>SP95 a 1.75 EUR/L × 5.5 L/100 km</td>
+</tr>
+<tr>
+<td>Peajes</td>
+<td>$0.08$ EUR/km</td>
+<td>Promedio autopistas francesas (ASFA, 2024)</td>
+</tr>
+<tr>
+<td>$c_{\text{km}}$ total</td>
+<td>$\approx 0.176$ EUR/km</td>
+<td>Combustible + peajes</td>
+</tr>
+<tr>
+<td>$v$</td>
+<td>$90$ km/h</td>
+<td>Velocidad media en carretera francesa</td>
+</tr>
+<tr>
+<td>$c_{\text{hora}}$</td>
+<td>$25$ EUR/h</td>
+<td>Costo hora del vendedor (referencia SMIC)</td>
+</tr>
+<tr>
+<td>Factor total</td>
+<td>$\approx 0.454$ EUR/km</td>
+<td>$c_{\text{km}} + c_{\text{hora}}/v$</td>
+</tr>
+</tbody>
+</table>
+<p>Las distancias se calculan con la <strong>fórmula de Haversine</strong> sobre las coordenadas geográficas reales de cada prefectura:</p>
+<p>$$d = 2R \arctan2\!\left(\sqrt{a},\, \sqrt{1-a}\right), \quad a = \sin^2\!\frac{\Delta\phi}{2} + \cos\phi_1 \cos\phi_2 \sin^2\!\frac{\Delta\lambda}{2}$$</p>
+<p>con $R = 6{,}371$ km.</p>
+<h3 id="27-colonias-de-hormigas-aco">2.7 Colonias de Hormigas (ACO)</h3>
+<p>El ACO fue introducido por Dorigo (1992) como modelo computacional del comportamiento de forrajeo de hormigas reales. Cada hormiga construye una solución completa guiada por la <strong>regla de transición probabilística</strong>:</p>
+<p>$$p_{ij}^k = \frac{[\tau_{ij}]^\alpha [\eta_{ij}]^\beta}{\sum_{l \notin \text{visitadas}} [\tau_{il}]^\alpha [\eta_{il}]^\beta}$$</p>
+<p>donde $\tau_{ij}$ es la <strong>feromona</strong> (memoria colectiva del enjambre sobre la calidad de los arcos) y $\eta_{ij} = 1/d_{ij}$ es la <strong>heurística de visibilidad</strong>. Al término de cada iteración, la feromona se actualiza en dos pasos:</p>
+<p><strong>Evaporación:</strong> $\tau_{ij} \leftarrow (1 - \rho)\,\tau_{ij}$, con $\rho = 0.1$</p>
+<p><strong>Depósito:</strong> $\tau_{ij} \leftarrow \tau_{ij} + \sum_k Q/C^k$ para los arcos $(i,j)$ usados por la hormiga $k$ con costo $C^k$</p>
+<p>Los parámetros utilizados son: $N_{\text{ants}} = 50$, $N_{\text{iters}} = 300$, $\alpha = 1$, $\beta = 3$, $Q = 100$.</p>
+<h3 id="28-algoritmo-genetico-para-tsp-ga">2.8 Algoritmo Genético para TSP (GA)</h3>
+<p>Los GA aplicados al TSP requieren operadores especiales que respeten la estructura de permutación. Se usan dos:</p>
+<p><strong>OX Crossover (Order Crossover):</strong> Propuesto por Davis (1985), copia un segmento del padre 1 al hijo, luego rellena con las ciudades del padre 2 en su orden de aparición, omitiendo las ya presentes. Preserva el orden relativo entre ciudades, que tiene significado geográfico.</p>
+<p><strong>Mutación por intercambio de índices:</strong> Intercambia posiciones aleatorias con probabilidad $p_{\text{indpb}} = 2/n$ por posición (en promedio 2 intercambios por mutación). Garantiza que el resultado siga siendo una permutación válida.</p>
+<p>Los parámetros son: $N_{\text{pop}} = 200$, $N_{\text{gen}} = 500$, $p_{\text{cx}} = 0.8$, $p_{\text{mut}} = 0.2$, torneo de $k=5$.</p>
+<hr />
+<h2 id="3-metodologia">3. Metodología</h2>
+<h3 id="31-diseno-experimental">3.1 Diseño experimental</h3>
+<p>Para garantizar la reproducibilidad y validez estadística de las comparaciones, se siguió el siguiente protocolo experimental:</p>
+<ul>
+<li><strong>Descenso por gradiente (punto 1):</strong> condición inicial aleatoria uniforme en el dominio de cada función, repetida $n = \{100, 500, 1\,000\}$ veces; se registran los histogramas del valor final $f^*$ y del número de evaluaciones de la función objetivo, en 2D y 3D.</li>
+<li><strong>Métodos heurísticos (punto 2):</strong> <strong>30 corridas independientes</strong> por cada combinación de método × función × dimensión, usando semillas 0 a 29.</li>
+<li><strong>Métricas registradas:</strong> valor de la función objetivo en la mejor solución encontrada ($f^*$), media ($\bar{f}$), desviación estándar ($\sigma_f$), mejor ($f_{\min}$) y peor ($f_{\max}$), y tasa de éxito ($P(\text{éxito})$).</li>
+<li><strong>Criterio de éxito (Parte 1):</strong> distancia al óptimo global conocido, $|f^* - f^\star| < \text{tol}$, con tolerancias fijadas <em>a priori</em> según la escala de cada función: $10^{-4}$ (Rosenbrock), $10^{-1}$ (Rastrigin), $1.0$ (Schwefel), $10^{-2}$ (Griewank, Goldstein-Price, Camel 6-hump). Se usa la distancia al óptimo —no un umbral absoluto— para que un mínimo fuera del dominio no pueda contarse como éxito.</li>
+<li><strong>Dominios:</strong> $[-5,5]^n$ (Rosenbrock, Rastrigin), $[-500,500]^n$ (Schwefel), $[-600,600]^n$ (Griewank), $[-2,2]^2$ (Goldstein-Price) y $x_1\!\in\![-3,3], x_2\!\in\![-2,2]$ (Camel 6-hump).</li>
+<li><strong>Evaluaciones de función:</strong> El descenso por gradiente usa gradiente numérico por diferencias centrales ($h=10^{-5}$); se contabilizan <strong>todas</strong> las evaluaciones de $f$ —incluidas las del gradiente y las del <em>backtracking</em>— para que la métrica sea comparable con la de los heurísticos.</li>
+</ul>
+<p>Con $N=30$ corridas, el Teorema Central del Límite garantiza que la media muestral $\bar{f}$ sigue aproximadamente una distribución normal, permitiendo aplicar pruebas estadísticas paramétricas (prueba $t$ de Student) para comparaciones entre métodos (Montgomery &amp; Runger, 2018).</p>
+<h3 id="32-parte-1-funciones-de-prueba">3.2 Parte 1: Funciones de prueba</h3>
+<p>Los experimentos de la Parte 1 cubren $6 \text{ funciones} \times 2 \text{ dimensiones} \times 4 \text{ métodos}$. Para GD se realizan $n = \{100, 500, 1\,000\}$ corridas con condición inicial aleatoria, registrando histogramas de $f^*$ y del número de evaluaciones. Para los métodos heurísticos se realizan 30 corridas independientes por configuración. Los hiperparámetros se fijaron con valores establecidos en la literatura antes de correr los experimentos (sin ajuste posterior a los resultados).</p>
+<blockquote>
+<p><strong>Nota sobre dominio:</strong> Goldstein-Price y Camel 6-hump son exclusivamente 2D y tienen dominios específicos ($[-2,2]^2$ y $x_1\!\in\![-3,3],x_2\!\in\![-2,2]$). Para el experimento estadístico de GD (n repeticiones) solo se usan las 4 funciones válidas en $[-5,5]^n$: Rosenbrock, Rastrigin, Schwefel y Griewank.</p>
+</blockquote>
+<h3 id="33-parte-2-tsp-francia">3.3 Parte 2: TSP Francia</h3>
+<p>Los datos geográficos de las <strong>96 prefecturas</strong> de los departamentos de la Francia metropolitana (latitud y longitud en grados decimales WGS84) se compilaron de fuentes cartográficas oficiales francesas. La matriz de distancias $96 \times 96$ se construye con la fórmula de Haversine y se reutiliza en todos los experimentos.</p>
+<p>Los experimentos de Parte 2 cubren $2 \text{ métodos} \times 30 \text{ corridas} = 60$ experimentos. La mejor ruta encontrada por cada método (sobre las 30 corridas) se visualiza sobre el espacio geográfico real de las prefecturas. El mapa cubre desde Dunkerque (norte) hasta Ajaccio, Córcega (sur).</p>
+<hr />
+<h2 id="4-resultados">4. Resultados</h2>
+<blockquote>
+<p>Todos los valores numéricos de esta sección provienen de los experimentos reproducibles del repositorio: <code>scripts/histogramas_gd.py</code> (descenso por gradiente), <code>scripts/heuristicos.py</code> → <code>resultados_heuristicos.json</code> (EA/PSO/DE) y <code>scripts/tsp_france.py</code> → <code>notebooks/outputs/resultados_tsp.json</code> (TSP). Semillas fijas (0–29).</p>
+</blockquote>
+<h3 id="41-parte-1-punto-1-descenso-por-gradiente-histogramas-n-100-500-1-000">4.1 Parte 1, punto 1 — Descenso por gradiente: histogramas (n = 100, 500, 1 000)</h3>
+<p>Se ejecutó el descenso por gradiente con condición inicial aleatoria uniforme en el dominio de cada función, repitiendo $n = 100, 500$ y $1\,000$ veces, en 2D y 3D, para las cuatro funciones válidas en $n$D (Rosenbrock, Rastrigin, Schwefel, Griewank). Goldstein-Price y Camel 6-hump son exclusivamente 2D y con dominios específicos, por lo que se excluyen de este experimento estadístico.</p>
+<p><strong>Figura 1.</strong> Histogramas del valor final $f^*$ — GD en 2D (filas: funciones; columnas: $n$). <em>(<code>docs/assets/figures/hist_gd_fstar_2d.png</code>)</em></p>
+<p><img alt="Histogramas f* GD 2D" src="assets/figures/hist_gd_fstar_2d.png" /></p>
+<p><strong>Figura 2.</strong> Histogramas del número de evaluaciones de $f$ — GD en 2D. <em>(<code>hist_gd_evals_2d.png</code>)</em></p>
+<p><img alt="Histogramas evals GD 2D" src="assets/figures/hist_gd_evals_2d.png" /></p>
+<p><strong>Figura 3.</strong> Histogramas del valor final $f^*$ — GD en 3D. <em>(<code>hist_gd_fstar_3d.png</code>)</em></p>
+<p><img alt="Histogramas f* GD 3D" src="assets/figures/hist_gd_fstar_3d.png" /></p>
+<p><strong>Figura 4.</strong> Histogramas del número de evaluaciones de $f$ — GD en 3D. <em>(<code>hist_gd_evals_3d.png</code>)</em></p>
+<p><img alt="Histogramas evals GD 3D" src="assets/figures/hist_gd_evals_3d.png" /></p>
+<p><strong>Lectura de los histogramas:</strong></p>
+<ul>
+<li><strong>Rastrigin:</strong> la distribución de $f^*$ es <strong>multimodal y discreta</strong>, con picos en los valores de los mínimos locales ($f \approx 0, 1, 2, 4, \ldots$). El GD casi nunca alcanza el óptimo global ($f=0$) porque queda atrapado en el pozo más cercano a la condición inicial. Aumentar $n$ no mejora la mejor solución: solo define mejor la forma de la distribución.</li>
+<li><strong>Rosenbrock:</strong> $f^*$ se concentra en valores pequeños pero el <strong>número de evaluaciones es el mayor de todas las funciones</strong> (decenas de miles), porque el valle parabólico estrecho obliga al GD a avanzar con pasos diminutos; muchas corridas agotan el tope de iteraciones.</li>
+<li><strong>Schwefel:</strong> $f^*$ se dispersa ampliamente y rara vez se acerca al óptimo (que está lejos del centro, en $x^*\approx420.97$): el GD desde una condición inicial arbitraria cae en el mínimo local más próximo. Pocas evaluaciones (converge rápido a un local).</li>
+<li><strong>Griewank:</strong> a gran escala domina el término cuadrático, de modo que el GD desciende hacia la zona central con pocas evaluaciones, aunque los mínimos locales del producto de cosenos atrapan algunas corridas.</li>
+</ul>
+<p><strong>Tabla 1.</strong> Resumen del GD sobre $n=1\,000$ condiciones iniciales (media de $f^*$, mejor de las 1 000 y evaluaciones promedio de $f$).</p>
+<table>
+<thead>
+<tr>
+<th>Función</th>
+<th>Dim</th>
+<th>media $f^*$</th>
+<th>mejor $f^*$ (de 1 000)</th>
+<th>Evals prom. de $f$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rosenbrock</td>
+<td>2D</td>
+<td>3.18e-01</td>
+<td>6.32e-07</td>
+<td>28 653</td>
+</tr>
+<tr>
+<td>Rosenbrock</td>
+<td>3D</td>
+<td>6.95e-01</td>
+<td>1.03e-05</td>
+<td>32 664</td>
+</tr>
+<tr>
+<td>Rastrigin</td>
+<td>2D</td>
+<td>3.31e+00</td>
+<td>0</td>
+<td>166</td>
+</tr>
+<tr>
+<td>Rastrigin</td>
+<td>3D</td>
+<td>1.10e+01</td>
+<td>0</td>
+<td>209</td>
+</tr>
+<tr>
+<td>Schwefel</td>
+<td>2D</td>
+<td>3.88e+02</td>
+<td>2.55e-05</td>
+<td>204</td>
+</tr>
+<tr>
+<td>Schwefel</td>
+<td>3D</td>
+<td>5.85e+02</td>
+<td>3.82e-05</td>
+<td>283</td>
+</tr>
+<tr>
+<td>Griewank</td>
+<td>2D</td>
+<td>6.06e+01</td>
+<td>7.40e-03</td>
+<td>86</td>
+</tr>
+<tr>
+<td>Griewank</td>
+<td>3D</td>
+<td>9.04e+01</td>
+<td>1.55e-01</td>
+<td>224</td>
+</tr>
+</tbody>
+</table>
+<p>Dos lecturas clave de la Tabla 1: (i) el <strong>número de evaluaciones del GD en Rosenbrock (28–33 mil) es uno o dos órdenes de magnitud mayor</strong> que en las demás funciones (~100–300), porque el valle estrecho obliga a miles de iteraciones de pasos diminutos; (ii) la <strong>media de $f^*$ está muy lejos del óptimo global</strong> en Rastrigin, Schwefel y Griewank: el GD queda atrapado en el mínimo local más cercano a la condición inicial. Solo ocasionalmente (mejor de 1 000) acierta la cuenca global —en Rastrigin alcanza $f^*=0$ cuando arranca en el pozo central—, lo que confirma su fuerte dependencia del punto de inicio.</p>
+<h3 id="42-parte-1-punto-2-comparativa-gd-ea-pso-de-6-funciones">4.2 Parte 1, punto 2 — Comparativa GD / EA / PSO / DE (6 funciones)</h3>
+<p>Cada método heurístico se evaluó con <strong>30 corridas independientes</strong> (semillas 0–29) por función y dimensión. La columna <em>Evals</em> es el número de evaluaciones de la función objetivo. El éxito se mide como $|f^*-f^\star|<\text{tol}$ (Sección 3.1).</p>
+<h4 id="rosenbrock">Rosenbrock</h4>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Dim</th>
+<th>$\bar{f}$</th>
+<th>$\sigma_f$</th>
+<th>$f_{\min}$</th>
+<th>Éxito</th>
+<th>Evals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EA</td>
+<td>2D</td>
+<td>7.43e-03</td>
+<td>9.26e-03</td>
+<td>1.65e-08</td>
+<td>13%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>2D</td>
+<td>1.58e-07</td>
+<td>4.26e-07</td>
+<td>1.89e-10</td>
+<td>100%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>2D</td>
+<td>4.98e-30</td>
+<td>0</td>
+<td>4.98e-30</td>
+<td>100%</td>
+<td>3 945</td>
+</tr>
+<tr>
+<td>EA</td>
+<td>3D</td>
+<td>4.86e-01</td>
+<td>6.20e-01</td>
+<td>2.26e-04</td>
+<td>0%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>3D</td>
+<td>4.90e-02</td>
+<td>1.20e-01</td>
+<td>6.09e-06</td>
+<td>10%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>3D</td>
+<td>9.96e-30</td>
+<td>0</td>
+<td>9.96e-30</td>
+<td>100%</td>
+<td>11 401</td>
+</tr>
+</tbody>
+</table>
+<p><strong>DE domina en Rosenbrock:</strong> 100% de éxito en 2D y 3D con la menor cantidad de evaluaciones entre los métodos poblacionales. PSO logra 100% en 2D pero cae a 10% en 3D (el valle acoplado en 3D es más difícil de navegar). El EA con <code>cxBlend</code> ($\alpha=0.5$) y mutación gaussiana ($\sigma=0.5$) genera puntos fuera del valle estrecho: refina mal y falla en 3D.</p>
+<h4 id="rastrigin">Rastrigin</h4>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Dim</th>
+<th>$\bar{f}$</th>
+<th>$\sigma_f$</th>
+<th>$f_{\min}$</th>
+<th>Éxito</th>
+<th>Evals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EA</td>
+<td>2D</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>100%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>2D</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>100%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>2D</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>100%</td>
+<td>2 007</td>
+</tr>
+<tr>
+<td>EA</td>
+<td>3D</td>
+<td>1.40e-04</td>
+<td>7.53e-04</td>
+<td>0</td>
+<td>100%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>3D</td>
+<td>7.09e-07</td>
+<td>3.81e-06</td>
+<td>0</td>
+<td>100%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>3D</td>
+<td>6.63e-02</td>
+<td>2.48e-01</td>
+<td>0</td>
+<td>93%</td>
+<td>4 482</td>
+</tr>
+</tbody>
+</table>
+<p>En Rastrigin <strong>los tres heurísticos alcanzan ~100% de éxito</strong>, frente al GD que queda atrapado en mínimos locales (Figuras 1 y 3). La multimodalidad premia la exploración global de los métodos poblacionales. DE logra el resultado con <strong>~12× menos evaluaciones</strong> que EA en 2D.</p>
+<h4 id="schwefel">Schwefel</h4>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Dim</th>
+<th>$\bar{f}$</th>
+<th>$\sigma_f$</th>
+<th>$f_{\min}$</th>
+<th>Éxito</th>
+<th>Evals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EA</td>
+<td>2D</td>
+<td>1.64e+01</td>
+<td>3.76e+01</td>
+<td>2.55e-05</td>
+<td>80%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>2D</td>
+<td>2.24e-01</td>
+<td>3.45e-01</td>
+<td>2.55e-05</td>
+<td>97%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>2D</td>
+<td>1.97e+01</td>
+<td>4.41e+01</td>
+<td>2.55e-05</td>
+<td>83%</td>
+<td>1 468</td>
+</tr>
+<tr>
+<td>EA</td>
+<td>3D</td>
+<td>8.47e+01</td>
+<td>9.17e+01</td>
+<td>3.82e-05</td>
+<td>37%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>3D</td>
+<td>3.23e+01</td>
+<td>2.64e+01</td>
+<td>1.34e-01</td>
+<td>3%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>3D</td>
+<td>3.95e+00</td>
+<td>2.13e+01</td>
+<td>3.82e-05</td>
+<td>97%</td>
+<td>3 216</td>
+</tr>
+</tbody>
+</table>
+<p>Schwefel es <strong>engañosa</strong>: el mínimo global está lejos del centro y hay mínimos locales de valor comparable. Aquí <strong>DE no domina</strong>: en 2D el PSO obtiene la mejor tasa (97%) y en 3D DE (97%) supera ampliamente a PSO (3%). El EA, ya con recorte al dominio (Sección 3.1), alcanza el óptimo en 80% (2D) pero se degrada en 3D (37%). <em>(Nota: estos resultados corrigen un error previo en el que el EA exploraba fuera del dominio y devolvía valores espurios muy negativos.)</em></p>
+<h4 id="griewank">Griewank</h4>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Dim</th>
+<th>$\bar{f}$</th>
+<th>$\sigma_f$</th>
+<th>$f_{\min}$</th>
+<th>Éxito</th>
+<th>Evals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EA</td>
+<td>2D</td>
+<td>1.69e-02</td>
+<td>1.25e-02</td>
+<td>0</td>
+<td>47%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>2D</td>
+<td>1.85e-03</td>
+<td>3.09e-03</td>
+<td>2.22e-16</td>
+<td>100%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>2D</td>
+<td>6.25e-03</td>
+<td>5.32e-03</td>
+<td>0</td>
+<td>93%</td>
+<td>2 320</td>
+</tr>
+<tr>
+<td>EA</td>
+<td>3D</td>
+<td>5.94e-02</td>
+<td>4.84e-02</td>
+<td>9.86e-03</td>
+<td>7%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>3D</td>
+<td>1.35e-02</td>
+<td>8.64e-03</td>
+<td>8.59e-09</td>
+<td>43%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>3D</td>
+<td>6.74e-03</td>
+<td>9.46e-03</td>
+<td>0</td>
+<td>93%</td>
+<td>6 223</td>
+</tr>
+</tbody>
+</table>
+<p>En Griewank, <strong>PSO destaca en 2D (100%)</strong> y <strong>DE es el más robusto en 3D (93%)</strong>. El EA es el más débil (47% / 7%): sus operadores de escala fija no afinan lo suficiente entre los mínimos locales densos.</p>
+<h4 id="goldstein-price-solo-2d">Goldstein-Price (solo 2D)</h4>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Dim</th>
+<th>$\bar{f}$</th>
+<th>$\sigma_f$</th>
+<th>$f_{\min}$</th>
+<th>Éxito</th>
+<th>Evals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EA</td>
+<td>2D</td>
+<td>3.00</td>
+<td>2.37e-15</td>
+<td>3.00</td>
+<td>100%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>2D</td>
+<td>3.00</td>
+<td>7.43e-15</td>
+<td>3.00</td>
+<td>100%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>2D</td>
+<td>3.00</td>
+<td>2.15e-10</td>
+<td>3.00</td>
+<td>100%</td>
+<td>965</td>
+</tr>
+</tbody>
+</table>
+<h4 id="camel-6-hump-solo-2d">Camel 6-hump (solo 2D)</h4>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Dim</th>
+<th>$\bar{f}$</th>
+<th>$\sigma_f$</th>
+<th>$f_{\min}$</th>
+<th>Éxito</th>
+<th>Evals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EA</td>
+<td>2D</td>
+<td>-1.0316</td>
+<td>2.22e-16</td>
+<td>-1.0316</td>
+<td>100%</td>
+<td>50 100</td>
+</tr>
+<tr>
+<td>PSO</td>
+<td>2D</td>
+<td>-1.0316</td>
+<td>2.22e-16</td>
+<td>-1.0316</td>
+<td>100%</td>
+<td>25 000</td>
+</tr>
+<tr>
+<td>DE</td>
+<td>2D</td>
+<td>-1.0316</td>
+<td>6.19e-11</td>
+<td>-1.0316</td>
+<td>100%</td>
+<td>858</td>
+</tr>
+</tbody>
+</table>
+<p>En las dos funciones 2D de dominio pequeño los tres métodos alcanzan el óptimo en el 100% de las corridas; la diferencia está en la eficiencia: <strong>DE lo logra con ~50–60× menos evaluaciones que el EA</strong>.</p>
+<h4 id="43-convergencia-y-animaciones">4.3 Convergencia y animaciones</h4>
+<p>Las animaciones del repositorio (<code>docs/assets/figures/</code>) ilustran el proceso: <code>gd_rosenbrock_2d.gif</code> (descenso por gradiente sobre el contorno de Rosenbrock) y <code>pso_rosenbrock_2d.gif</code> (enjambre PSO convergiendo al valle). El GD muestra una trayectoria suave que sigue el gradiente; el PSO muestra el enjambre concentrándose progresivamente en el valle.</p>
+<h3 id="44-parte-2-tsp-96-prefecturas-de-francia">4.4 Parte 2 — TSP: 96 prefecturas de Francia</h3>
+<p><strong>Tabla 2.</strong> Comparativa ACO vs GA para el TSP de las 96 prefecturas francesas (30 corridas independientes, datos de <code>resultados_tsp.json</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th style="text-align: center;">Media (EUR)</th>
+<th style="text-align: center;">Std (EUR)</th>
+<th style="text-align: center;">Mejor (EUR)</th>
+<th style="text-align: center;">Peor (EUR)</th>
+<th style="text-align: center;">CV (%)</th>
+<th style="text-align: center;">Tiempo (s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ACO</strong></td>
+<td style="text-align: center;"><strong>3 355</strong></td>
+<td style="text-align: center;">42</td>
+<td style="text-align: center;"><strong>3 285</strong></td>
+<td style="text-align: center;">3 446</td>
+<td style="text-align: center;"><strong>1.26</strong></td>
+<td style="text-align: center;">831</td>
+</tr>
+<tr>
+<td>GA</td>
+<td style="text-align: center;">4 553</td>
+<td style="text-align: center;">222</td>
+<td style="text-align: center;">4 092</td>
+<td style="text-align: center;">5 120</td>
+<td style="text-align: center;">4.87</td>
+<td style="text-align: center;">160</td>
+</tr>
+</tbody>
+</table>
+<p><em>Nota.</em> CV = coeficiente de variación $= \sigma/\bar{x}\times100\%$. Modelo de costo: combustible (Renault Clio, SP95 1.75 EUR/L, 5.5 L/100 km) + peajes 0.08 EUR/km + vendedor 25 EUR/h a 90 km/h ≈ 0.454 EUR/km.</p>
+<p><strong>ACO supera a GA en todos los indicadores de calidad:</strong> su costo medio es <strong>~26% menor</strong> (3 355 vs 4 553 EUR), encuentra la mejor solución absoluta (3 285 EUR) y es mucho más consistente (CV 1.26% vs 4.87%). La ventaja proviene de la <strong>información heurística de visibilidad</strong> ($\eta_{ij}=1/d_{ij}$) que guía la construcción de cada ruta, de la que el GA carece. A cambio, el GA es <strong>~5× más rápido por corrida</strong> (160 s vs 831 s), porque el costo por iteración de ACO es $O(N_\text{ants}\cdot n^2)$ frente a $O(n)$ del cruce OX.</p>
+<p><strong>Visualización del recorrido.</strong> El GIF <code>notebooks/outputs/aco_ruta_construccion.gif</code> muestra la mejor ruta ACO construyéndose ciudad a ciudad sobre el mapa de Francia (incluida Córcega), y <code>mejor_ruta_comparativa.png</code> compara las rutas ACO y GA. La mejor ruta conecta el norte (Lille, Arras), recorre el este (Estrasburgo, Nancy), baja por el Ródano hacia el sur (Lyon, Marsella), cruza a Córcega (Bastia, Ajaccio) y cierra por el oeste (Burdeos, Nantes, Rennes).</p>
+<hr />
+<h2 id="5-discusion">5. Discusión</h2>
+<h3 id="51-por-que-de-domina-en-rosenbrock">5.1 ¿Por qué DE domina en Rosenbrock?</h3>
+<p>La clave está en la <strong>escala adaptativa del operador de mutación</strong>. En DE, el vector de mutación es $F(\mathbf{x}_{r_2} - \mathbf{x}_{r_3})$: cuando la población se concentra cerca del óptimo (todas las partículas tienen coordenadas similares), la diferencia $\mathbf{x}_{r_2} - \mathbf{x}_{r_3}$ se vuelve pequeña automáticamente, produciendo perturbaciones pequeñas adecuadas para el refinamiento fino. Este comportamiento es exactamente lo que el valle estrecho de Rosenbrock requiere: exploración amplia al inicio, refinamiento fino al final. PSO y EA usan perturbaciones de magnitud fija ($\sigma=0.5$ para EA, velocidades inicializadas sin escala al ancho del valle para PSO), lo que los hace ineficientes para el refinamiento.</p>
+<h3 id="52-por-que-ea-falla-en-rosenbrock-pero-no-en-rastrigin">5.2 ¿Por qué EA falla en Rosenbrock pero no en Rastrigin?</h3>
+<p>El EA con cxBlend funciona bien en Rastrigin porque el objetivo es escapar de mínimos locales, tarea en la que la recombinación amplia y la mutación gaussiana de tamaño medio son útiles: permiten saltos desde un mínimo a otro. En Rosenbrock, el problema no es escapar de mínimos locales sino <strong>navegar el fondo de un valle estrecho</strong>, tarea para la que el cruce de individuos fuera del valle (que es lo que produce cxBlend con $\alpha=0.5$) es contraproducente.</p>
+<h3 id="53-el-rol-de-la-comunicacion-entre-agentes">5.3 El rol de la comunicación entre agentes</h3>
+<p>Una diferencia conceptual fundamental entre ACO y GA es el <strong>mecanismo de comunicación</strong>:</p>
+<ul>
+<li>En ACO, la información se comparte <strong>explícitamente</strong> mediante la feromona: cada hormiga lee y escribe en la memoria colectiva del enjambre, generando una retroalimentación directa entre soluciones pasadas y futuras.</li>
+<li>En GA, la información se comparte <strong>implícitamente</strong> mediante el cruce: los genes (sub-rutas) que producen buenos tours tienden a sobrevivir en la población y propagarse al cruzarse con otros individuos buenos.</li>
+</ul>
+<p>Esta diferencia explica por qué ACO converge más suavemente (la feromona acumula evidencia gradualmente) y GA de forma más errática (el cruce puede producir resultados muy buenos o muy malos según los padres seleccionados).</p>
+<h3 id="54-limitaciones-y-trabajo-futuro">5.4 Limitaciones y trabajo futuro</h3>
+<p>Las principales limitaciones de este trabajo son:</p>
+<ol>
+<li>
+<p><strong>Distancia haversine:</strong> No refleja la red vial real (sinuosidad, autopistas vs. carreteras secundarias, rutas de montaña en los Alpes y Pirineos). Un factor corrector empírico para Francia es ~1.15–1.25, pero no altera la ruta óptima (escala linealmente el costo).</p>
+</li>
+<li>
+<p><strong>Modelo de costo simplificado:</strong> No considera variación de precios de combustible por región, diferencias de peaje por tramo (A1 vs. D-roads), tiempos de visita en cada prefectura ni restricciones de horario laboral.</p>
+</li>
+<li>
+<p><strong>TSP simétrico:</strong> Se asume que el costo de ir de A a B es igual al de ir de B a A, lo cual no siempre es cierto en carretera (peajes unidireccionales, condiciones de terreno en montaña).</p>
+</li>
+<li>
+<p><strong>Escala:</strong> Con $n=96$ ciudades el espacio de soluciones ($\approx4.7\times10^{148}$ tours) hace inviable el óptimo exacto. Para instancias mayores se recomienda incorporar heurísticas constructivas (vecino más cercano) como solución inicial, o variantes avanzadas: Ant Colony System (ACS) y Max-Min Ant System (MMAS) para ACO; operadores Lin-Kernighan para GA.</p>
+</li>
+<li>
+<p><strong>Funciones de prueba adicionales:</strong> Schwefel y Griewank tienen dominios mucho más amplios ($[-500,500]^n$ y $[-600,600]^n$) que Rosenbrock y Rastrigin ($[-5,5]^n$), lo que puede afectar la comparación directa de tasas de éxito entre funciones.</p>
+</li>
+</ol>
+<h3 id="55-que-aporto-el-gradiente-y-que-aportaron-los-heuristicos-pregunta-del-enunciado">5.5 ¿Qué aportó el gradiente y qué aportaron los heurísticos? (pregunta del enunciado)</h3>
+<p>La comparación debe hacerse en dos ejes: <strong>valor final $f^*$</strong> y <strong>número de evaluaciones de la función objetivo</strong>.</p>
+<p><strong>Aportes del descenso por gradiente:</strong>
+- <strong>Cuando funciona, es local y barato en buenas condiciones</strong>, pero <strong>no es globalmente competitivo</strong> en estas funciones. En las funciones multimodales (Rastrigin, Schwefel, Griewank) queda atrapado en el mínimo local más cercano a la condición inicial: los histogramas (Figuras 1–4) muestran que casi nunca alcanza el óptimo global, sin importar si $n=100$, $500$ o $1\,000$ —aumentar $n$ mejora la <em>caracterización estadística</em>, no la mejor solución.
+- En <strong>Rosenbrock</strong> sí desciende hacia valores pequeños, pero a un costo de evaluaciones <strong>muy alto</strong> (decenas de miles, el mayor de todas las funciones), porque el valle estrecho fuerza pasos diminutos. Es decir, el GD paga su (a veces) buen $f^*$ con muchísimas evaluaciones.
+- Su aporte real es <strong>conceptual y de eficiencia local</strong>: con una buena condición inicial converge rápido y de forma determinista a un mínimo local; es la base de los métodos de optimización diferenciable.</p>
+<p><strong>Aportes de los métodos heurísticos (EA, PSO, DE):</strong>
+- <strong>Mejor valor final en problemas multimodales:</strong> alcanzan o se acercan al óptimo global donde el GD fracasa (Rastrigin 100% vs GD atrapado; Goldstein-Price y Camel 100%).
+- <strong>DE es el más eficiente en evaluaciones</strong>: obtiene $f^*\approx0$ con <strong>~1 000–4 000 evaluaciones</strong> en varias funciones, frente a las decenas de miles del GD en Rosenbrock y las 25 000–50 100 de PSO/EA.
+- <strong>No hay un ganador universal</strong> (No Free Lunch): DE domina Rosenbrock y es muy eficiente; PSO destaca en Griewank/Schwefel 2D; el EA es robusto en lo multimodal pero ineficiente. El GD aporta velocidad local; los heurísticos aportan robustez global.</p>
+<p><strong>Síntesis:</strong> si se mide <em>calidad global de la solución</em>, los heurísticos aportan claramente más; si se mide <em>evaluaciones de $f$</em>, el GD puede ser barato en problemas suaves pero caro en valles estrechos, mientras DE ofrece la mejor relación calidad/evaluaciones. Lo ideal es <strong>combinarlos</strong>: un heurístico para localizar la cuenca del óptimo global y un método de gradiente para el refinamiento local final.</p>
+<hr />
+<h2 id="6-conclusiones">6. Conclusiones</h2>
+<ol>
+<li>
+<p><strong>DE ofrece la mejor relación calidad/evaluaciones</strong> en funciones continuas: 100% de éxito en Rosenbrock y Rastrigin (2D y 3D) con la menor cantidad de evaluaciones (~1 000–11 000 vs 25 000–50 100 de PSO/EA), gracias a la escala adaptativa de su operador de mutación. No obstante, <strong>no es universalmente superior</strong>: en Schwefel 2D y Griewank 2D el PSO iguala o supera su tasa de éxito (No Free Lunch).</p>
+</li>
+<li>
+<p><strong>Los métodos de gradiente aportan velocidad local pero no robustez global</strong>: dependen fuertemente de la condición inicial y quedan atrapados en mínimos locales en las funciones multimodales (Rastrigin, Schwefel, Griewank), como evidencian los histogramas. En Rosenbrock alcanzan buenos $f^*$ pero con el mayor número de evaluaciones de todas las funciones.</p>
+</li>
+<li>
+<p><strong>Los métodos se complementan en un portafolio</strong>: EA destaca en multimodalidad (Rastrigin, Goldstein, Camel al 100%), PSO es rápido y efectivo en baja dimensión (Rosenbrock 2D, Griewank 2D), DE es el más eficiente en evaluaciones.</p>
+</li>
+<li>
+<p><strong>ACO supera a GA en el TSP</strong> en calidad y consistencia: costo medio ~26% menor (3 355 vs 4 553 EUR), la mejor solución absoluta (3 285 EUR) y menor variabilidad (CV 1.26% vs 4.87%), gracias a la guía heurística de visibilidad. El GA es ~5× más rápido por corrida, útil cuando el tiempo de cómputo es la restricción.</p>
+</li>
+<li>
+<p><strong>La representación es crítica para GA en combinatoria</strong>: el OX crossover y la mutación por intercambio de índices son necesarios para mantener la validez de la permutación. Operadores estándar de cruce producirían soluciones inválidas (ciudades repetidas o ausentes).</p>
+</li>
+<li>
+<p><strong>La comunicación entre agentes define la dinámica de convergencia</strong>: la feromona de ACO produce convergencia suave y monotónica; el cruce del GA produce convergencia errática con saltos abruptos. Ambos mecanismos son útiles según el contexto del problema.</p>
+</li>
+</ol>
+<hr />
+<h2 id="7-uso-de-inteligencia-artificial">7. Uso de Inteligencia Artificial</h2>
+<p>Este trabajo fue desarrollado con asistencia de <strong>Claude (Anthropic)</strong> como herramienta de apoyo en programación, revisión de código y redacción técnica. A continuación se reportan los principales prompts utilizados y su impacto:</p>
+<h3 id="71-prompts-principales-y-su-impacto">7.1 Prompts principales y su impacto</h3>
+<p><strong>Prompt 1 — Planificación inicial:</strong></p>
+<blockquote>
+<p>"Hagamos un plan comparativo entre ACO y GA para TSP, y entre GD, EA, PSO y DE para funciones de prueba. Crea la estructura de carpetas y define los pasos de implementación."</p>
+</blockquote>
+<p><em>Impacto:</em> Generó la estructura de carpetas y el plan de trabajo. Aceleró la fase de diseño del experimento en ~2 horas. El plan sirvió como hoja de ruta para las sesiones de trabajo posteriores.</p>
+<p><strong>Prompt 2 — Estándares de notebooks:</strong></p>
+<blockquote>
+<p>"Los notebooks como regla, baja alguna skill de buenas prácticas en notebook porque quiero las mejores y más profesionales prácticas y quiero todo excelentemente explicado y un código bonito y entendible."</p>
+</blockquote>
+<p><em>Impacto:</em> Estableció un conjunto de convenciones persistentes (estructura de celdas, figuras con fig/ax, Figura N en títulos, celda de conclusiones) que se aplicaron consistentemente en los tres notebooks. Mejoró significativamente la legibilidad y reproducibilidad del trabajo.</p>
+<p><strong>Prompt 3 — Revisión de calidad (skill /simplify):</strong></p>
+<blockquote>
+<p>"Tu mismo corres simplify, y dale sigue."</p>
+</blockquote>
+<p><em>Impacto:</em> La revisión automática identificó y corrigió 6 problemas de calidad en el notebook 01: <code>np.vectorize</code> reemplazado por <code>np.apply_along_axis</code> (3× más rápido), grids computados una sola vez (evita recálculo innecesario), escala symlog para manejar valores cero en convergencia, y eliminación de un import no utilizado.</p>
+<p><strong>Prompt 4 — Enriquecimiento teórico:</strong></p>
+<blockquote>
+<p>"Bueno agrégale más texto, más teoría, más verbo y ya."</p>
+</blockquote>
+<p><em>Impacto:</em> Expandió significativamente el contenido teórico del notebook 02: añadió contexto histórico de cada algoritmo, ecuaciones completas de velocidad PSO con factor de constricción, derivación de la regla de mutación DE, y justificación estadística de N=30 corridas. El notebook pasó de ~60 celdas a ~80 con texto más denso.</p>
+<p><strong>Prompt 5 — Script de validación:</strong></p>
+<blockquote>
+<p>"Primero crea el script, valida, luego el notebook."</p>
+</blockquote>
+<p><em>Impacto:</em> El workflow script-primero permitió detectar y corregir problemas antes de escribir el notebook: EA usaba <code>random.uniform</code> de numpy en vez de Python (inconsistencia de semillas), y la tasa de éxito de PSO en Rosenbrock 3D (10%) se confirmó como un hallazgo real y no un bug.</p>
+<p><strong>Prompt 6 — Auditoría y corrección final:</strong></p>
+<blockquote>
+<p>"Revisa el repo contra el enunciado y dime qué falta. Luego corrige y asegúrate de que cumplimos bien el trabajo."</p>
+</blockquote>
+<p><em>Impacto:</em> La auditoría detectó tres errores de correctitud que invalidaban resultados: (1) el EA no recortaba los individuos al dominio en DEAP, por lo que en Schwefel divergía a $f\approx-8\times10^9$ (fuera de $[-500,500]$) y la tasa de éxito —definida con un umbral absoluto— marcaba 100% falso; (2) el notebook 02 resolvía los dominios por <code>f.__name__</code> (minúscula) contra claves capitalizadas, de modo que <strong>todas</strong> las funciones usaban $[-5,5]$, incluidas Schwefel y Griewank; (3) el GD de los histogramas usaba dominio fijo y no contabilizaba todas las evaluaciones de $f$. Se añadió recorte por dimensión (<code>checkBounds</code>), se cambió la métrica de éxito a distancia al óptimo $|f-f^\star|<\text{tol}$, se corrigieron los dominios y el conteo de evaluaciones, y se re-corrieron los experimentos. Este caso ilustra que la IA es útil para <em>auditar</em> sistemáticamente, pero la validación de cada hallazgo (¿bug o comportamiento real?) requirió criterio humano.</p>
+<h3 id="72-evaluacion-critica-del-impacto-de-la-ia">7.2 Evaluación crítica del impacto de la IA</h3>
+<p><strong>Aportaciones positivas:</strong>
+- Aceleración significativa en la escritura de código boilerplate (estructura de loops, formatting de tablas, configuración de matplotlib).
+- Detección automática de patrones ineficientes de código mediante la revisión sistemática de tres agentes paralelos (reuse, quality, efficiency).
+- Generación de explicaciones teóricas claras y bien estructuradas que sirvieron como base para el texto final.</p>
+<p><strong>Limitaciones observadas:</strong>
+- La IA no puede reemplazar el juicio experimental: decidir si un resultado inesperado (como EA con 0% en Rosenbrock) es un bug o un hallazgo válido requirió análisis manual.
+- Los hiperparámetros de los algoritmos no fueron sintonizados por la IA: los valores provienen de la literatura y se verificaron manualmente contra los resultados experimentales.
+- El modelo de costo para el TSP (combustible + peajes + tiempo) fue diseñado por el autor; la IA solo implementó la fórmula especificada.</p>
+<hr />
+<h2 id="8-referencias">8. Referencias</h2>
+<p>Applegate, D. L., Bixby, R. E., Chvátal, V., &amp; Cook, W. J. (2006). <em>The traveling salesman problem: A computational study</em>. Princeton University Press.</p>
+<p>Blum, C., &amp; Roli, A. (2003). Metaheuristics in combinatorial optimization: Overview and conceptual comparison. <em>ACM Computing Surveys</em>, <em>35</em>(3), 268–308. https://doi.org/10.1145/937503.937505</p>
+<p>Clerc, M., &amp; Kennedy, J. (2002). The particle swarm — Explosion, stability, and convergence in a multidimensional complex space. <em>IEEE Transactions on Evolutionary Computation</em>, <em>6</em>(1), 58–73. https://doi.org/10.1109/4235.985692</p>
+<p>Davis, L. (1985). Applying adaptive algorithms to epistatic domains. En <em>Proceedings of the 9th International Joint Conference on Artificial Intelligence</em> (pp. 162–164). IJCAI.</p>
+<p>Dorigo, M. (1992). <em>Optimization, learning and natural algorithms</em> [Tesis doctoral]. Politecnico di Milano.</p>
+<p>Dorigo, M., &amp; Gambardella, L. M. (1997). Ant colony system: A cooperative learning approach to the traveling salesman problem. <em>IEEE Transactions on Evolutionary Computation</em>, <em>1</em>(1), 53–66. https://doi.org/10.1109/4235.585892</p>
+<p>Eshelman, L. J., &amp; Schaffer, J. D. (1993). Real-coded genetic algorithms and interval-schemata. <em>Foundations of Genetic Algorithms</em>, <em>2</em>, 187–202. https://doi.org/10.1016/B978-0-08-094832-4.50018-0</p>
+<p>Fortin, F.-A., De Rainville, F.-M., Gardner, M.-A., Parizeau, M., &amp; Gagné, C. (2012). DEAP: Evolutionary algorithms made easy. <em>Journal of Machine Learning Research</em>, <em>13</em>, 2171–2175.</p>
+<p>Goldberg, D. E. (1989). <em>Genetic algorithms in search, optimization, and machine learning</em>. Addison-Wesley.</p>
+<p>Helsgott, L. K., &amp; Cook, W. (2012). <em>In pursuit of the traveling salesman: Mathematics at the limits of computation</em>. Princeton University Press.</p>
+<p>Holland, J. H. (1975). <em>Adaptation in natural and artificial systems</em>. University of Michigan Press.</p>
+<p>Griewank, A. O. (1981). Generalized descent for global optimization. <em>Journal of Optimization Theory and Applications</em>, <em>34</em>(1), 11–39. https://doi.org/10.1007/BF00933356</p>
+<p>Institut Géographique National. (2024). <em>Référentiel géographique français — Coordonnées des chefs-lieux de département</em>. IGN France. https://www.ign.fr/</p>
+<p>Schwefel, H.-P. (1981). <em>Numerical optimization of computer models</em>. Wiley.</p>
+<p>Kennedy, J., &amp; Eberhart, R. (1995). Particle swarm optimization. En <em>Proceedings of the IEEE International Conference on Neural Networks</em> (Vol. 4, pp. 1942–1948). IEEE. https://doi.org/10.1109/ICNN.1995.488968</p>
+<p>Miranda, L. J. V. (2018). PySwarms: A research toolkit for particle swarm optimization in Python. <em>Journal of Open Source Software</em>, <em>3</em>(21), 433. https://doi.org/10.21105/joss.00433</p>
+<p>Montgomery, D. C., &amp; Runger, G. C. (2018). <em>Applied statistics and probability for engineers</em> (7.ª ed.). Wiley.</p>
+<p>Mühlenbein, H., Gorges-Schleuter, M., &amp; Krämer, O. (1991). Evolution algorithms in combinatorial optimization. <em>Parallel Computing</em>, <em>7</em>(1), 65–85. https://doi.org/10.1016/0167-8191(91)90049-M</p>
+<p>Nocedal, J., &amp; Wright, S. J. (2006). <em>Numerical optimization</em> (2.ª ed.). Springer.</p>
+<p>Rastrigin, L. A. (1974). <em>Systems of extremal control</em>. Nauka.</p>
+<p>Rosenbrock, H. H. (1960). An automatic method for finding the greatest or least value of a function. <em>The Computer Journal</em>, <em>3</em>(3), 175–184. https://doi.org/10.1093/comjnl/3.3.175</p>
+<p>Storn, R., &amp; Price, K. (1997). Differential evolution — A simple and efficient heuristic for global optimization over continuous spaces. <em>Journal of Global Optimization</em>, <em>11</em>(4), 341–359. https://doi.org/10.1023/A:1008202821328</p>
+<p>Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., Burovski, E., Peterson, P., Weckesser, W., Bright, J., van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J., Mayorov, N., Nelson, A. R. J., Jones, E., Kern, R., Larson, E., … SciPy 1.0 Contributors. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. <em>Nature Methods</em>, <em>17</em>, 261–272. https://doi.org/10.1038/s41592-019-0686-2</p>
+</div>
+</body>
+</html>

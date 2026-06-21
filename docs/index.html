@@ -313,6 +313,31 @@ tailwind.config = {
         <span class="text-caption font-caption text-on-surface-variant">Fig. 3 &mdash; Trayectoria del descenso por gradiente con backtracking Armijo sobre Rosenbrock 2D (escala log). El punto rojo recorre el valle estrecho hasta el minimo global (1,1). Condicion inicial aleatoria, semilla 42.</span>
       </div>
     </div>
+
+    <div class="mt-8 mb-4 fade-up">
+      <span class="text-label-caps font-label-caps text-outline uppercase tracking-wider text-xs">2.5</span>
+      <h3 class="text-headline-md font-headline-md text-on-surface mt-0.5">Histogramas del descenso por gradiente &mdash; n = 100 / 500 / 1 000</h3>
+      <div class="h-px bg-outline-variant mt-2"></div>
+      <p class="text-body-md font-body-md text-on-surface-variant mt-3 max-w-2xl">Descenso por gradiente proyectado con condicion inicial aleatoria, repetido n = 100, 500 y 1 000 veces. Se registran el valor final $f^*$ y el numero de evaluaciones de $f$ (gradiente numerico + backtracking). Rosenbrock exige decenas de miles de evaluaciones (valle estrecho); en Rastrigin, Schwefel y Griewank el GD queda atrapado en minimos locales lejos del optimo.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter fade-up">
+      <figure class="border-2 border-outline-variant overflow-hidden">
+        <img src="assets/figures/hist_gd_fstar_2d.png" alt="Histogramas de f* del GD en 2D" class="w-full object-cover cursor-zoom-in" onclick="openLightbox(this)"/>
+        <figcaption class="bg-surface-container px-4 py-2 text-caption font-caption text-on-surface-variant">Fig. 4a &mdash; Valor final $f^*$ (2D).</figcaption>
+      </figure>
+      <figure class="border-2 border-outline-variant overflow-hidden">
+        <img src="assets/figures/hist_gd_evals_2d.png" alt="Histogramas de evaluaciones del GD en 2D" class="w-full object-cover cursor-zoom-in" onclick="openLightbox(this)"/>
+        <figcaption class="bg-surface-container px-4 py-2 text-caption font-caption text-on-surface-variant">Fig. 4b &mdash; Nº de evaluaciones de $f$ (2D).</figcaption>
+      </figure>
+      <figure class="border-2 border-outline-variant overflow-hidden">
+        <img src="assets/figures/hist_gd_fstar_3d.png" alt="Histogramas de f* del GD en 3D" class="w-full object-cover cursor-zoom-in" onclick="openLightbox(this)"/>
+        <figcaption class="bg-surface-container px-4 py-2 text-caption font-caption text-on-surface-variant">Fig. 4c &mdash; Valor final $f^*$ (3D).</figcaption>
+      </figure>
+      <figure class="border-2 border-outline-variant overflow-hidden">
+        <img src="assets/figures/hist_gd_evals_3d.png" alt="Histogramas de evaluaciones del GD en 3D" class="w-full object-cover cursor-zoom-in" onclick="openLightbox(this)"/>
+        <figcaption class="bg-surface-container px-4 py-2 text-caption font-caption text-on-surface-variant">Fig. 4d &mdash; Nº de evaluaciones de $f$ (3D).</figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- ══ HEURISTICOS ════════════════════════════════════════════════════ -->
@@ -350,14 +375,14 @@ tailwind.config = {
     <div class="border-2 border-outline-variant mb-gutter fade-up cursor-zoom-in overflow-hidden" onclick="openLightbox(this.querySelector('img'))">
       <img src="assets/figures/comparison_bars.png" alt="Tasa de exito por metodo y funcion" class="w-full object-cover hover:opacity-95 transition-opacity"/>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant flex items-center justify-between">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 4 &mdash; Tasa de exito de EA, PSO y DE sobre seis configuraciones. DE domina en Rosenbrock 2D/3D (100%). PSO cae a 10% en 3D. EA 0% en Rosenbrock 3D.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 5 &mdash; Tasa de exito de EA, PSO y DE (30 corridas). DE domina en Rosenbrock 2D/3D (100%); PSO cae a 10% en Rosenbrock 3D; en Schwefel/Griewank ningun metodo domina (No Free Lunch).</span>
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
       </div>
     </div>
     <div class="border-2 border-outline-variant mb-stack-md fade-up cursor-zoom-in overflow-hidden" onclick="openLightbox(this.querySelector('img'))">
       <img src="assets/figures/evals_comparison.png" alt="Numero de evaluaciones por metodo" class="w-full object-cover hover:opacity-95 transition-opacity"/>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant flex items-center justify-between">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 5 &mdash; Evaluaciones promedio en escala log. DE usa entre 3x y 12x menos evaluaciones que EA y PSO para el mismo umbral de exito.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 6 &mdash; Evaluaciones promedio en escala log. DE usa entre 3x y 25x menos evaluaciones que PSO y EA para el mismo umbral de exito.</span>
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
       </div>
     </div>
@@ -377,7 +402,7 @@ tailwind.config = {
         <img src="assets/figures/pso_rosenbrock_2d.gif" alt="Animacion PSO Rosenbrock 2D" class="max-w-full" style="max-height:340px;"/>
       </div>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 6 &mdash; Enjambre de 30 particulas (PSO, w=0.729, c1=c2=2.05) convergiendo sobre Rosenbrock 2D. Panel izquierdo: posiciones sobre el contour. Panel derecho: curva de mejor f global en escala symlog. Las particulas se concentran rapidamente en el valle.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 7 &mdash; Enjambre de 30 particulas (PSO, w=0.729, c1=c2=2.05) convergiendo sobre Rosenbrock 2D. Panel izquierdo: posiciones sobre el contour. Panel derecho: curva de mejor f global en escala symlog. Las particulas se concentran rapidamente en el valle.</span>
       </div>
     </div>
 
@@ -409,212 +434,212 @@ tailwind.config = {
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rosenbrock</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">1.01e-02</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">1.65e-08</td>
+              <td class="text-right text-on-surface-variant text-xs">7.43e-03</td><td class="text-right text-on-surface-variant text-xs">1.65e-08</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">13%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rosenbrock</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">1.58e-07</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">1.89e-10</td>
+              <td class="text-right font-bold text-secondary text-xs">1.58e-07</td><td class="text-right font-bold text-secondary text-xs">1.89e-10</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rosenbrock</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">4.98e-30</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">4.98e-30</td>
+              <td class="text-right font-bold text-secondary text-xs">4.98e-30</td><td class="text-right font-bold text-secondary text-xs">4.98e-30</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">3 945</td>
+              <td class="text-right font-bold text-secondary text-xs">3 945</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rosenbrock</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">4.27e-01</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">3.77e-04</td>
+              <td class="text-right text-on-surface-variant text-xs">4.86e-01</td><td class="text-right text-on-surface-variant text-xs">2.26e-04</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-error-container text-on-error-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">0%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rosenbrock</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">4.90e-02</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">6.09e-06</td>
+              <td class="text-right text-on-surface-variant text-xs">4.90e-02</td><td class="text-right text-on-surface-variant text-xs">6.09e-06</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">10%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rosenbrock</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">9.96e-30</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">9.96e-30</td>
+              <td class="text-right font-bold text-secondary text-xs">9.96e-30</td><td class="text-right font-bold text-secondary text-xs">9.96e-30</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">11 401</td>
+              <td class="text-right font-bold text-secondary text-xs">11 401</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rastrigin</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td>
+              <td class="text-right font-bold text-secondary text-xs">0.00e+00</td><td class="text-right font-bold text-secondary text-xs">0.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rastrigin</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td>
+              <td class="text-right font-bold text-secondary text-xs">0.00e+00</td><td class="text-right font-bold text-secondary text-xs">0.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rastrigin</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td>
+              <td class="text-right font-bold text-secondary text-xs">0.00e+00</td><td class="text-right font-bold text-secondary text-xs">0.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">2 007</td>
+              <td class="text-right font-bold text-secondary text-xs">2 007</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rastrigin</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">1.40e-04</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td>
+              <td class="text-right font-bold text-secondary text-xs">1.40e-04</td><td class="text-right font-bold text-secondary text-xs">0.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rastrigin</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">7.09e-07</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td>
+              <td class="text-right font-bold text-secondary text-xs">7.09e-07</td><td class="text-right font-bold text-secondary text-xs">0.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Rastrigin</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">6.63e-02</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">0.00e+00</td>
-              <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">4 482</td>
+              <td class="text-right text-on-surface-variant text-xs">6.63e-02</td><td class="text-right text-on-surface-variant text-xs">0.00e+00</td>
+              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">93%</span></td>
+              <td class="text-right font-bold text-secondary text-xs">4 482</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">-8.48e+09</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">-1.19e+11</td>
-              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%&#42;</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">1.64e+01</td><td class="text-right text-on-surface-variant text-xs">2.55e-05</td>
+              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">80%</span></td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">2.24e-01</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">2.55e-05</td>
-              <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
-            </tr>
-            <tr class="hover:bg-surface-container transition-colors">
-              <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
-              <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">19.74</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">2.55e-05</td>
-              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">83%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">1 468</td>
-            </tr>
-            <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
-              <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
-              <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">-1.44e+08</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">-3.96e+09</td>
-              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%&#42;</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
-            </tr>
-            <tr class="hover:bg-surface-container transition-colors">
-              <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
-              <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">32.31</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">0.1335</td>
-              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">30%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
-            </tr>
-            <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
-              <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
-              <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">3.948</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">3.82e-05</td>
+              <td class="text-right text-on-surface-variant text-xs">2.24e-01</td><td class="text-right text-on-surface-variant text-xs">2.55e-05</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">97%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">3 217</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
+            </tr>
+            <tr class="hover:bg-surface-container transition-colors">
+              <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
+              <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
+              <td class="text-right text-on-surface-variant text-xs">1.97e+01</td><td class="text-right text-on-surface-variant text-xs">2.55e-05</td>
+              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">83%</span></td>
+              <td class="text-right font-bold text-secondary text-xs">1 468</td>
+            </tr>
+            <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+              <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
+              <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
+              <td class="text-right text-on-surface-variant text-xs">8.47e+01</td><td class="text-right text-on-surface-variant text-xs">3.82e-05</td>
+              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">37%</span></td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
+            </tr>
+            <tr class="hover:bg-surface-container transition-colors">
+              <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
+              <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
+              <td class="text-right text-on-surface-variant text-xs">3.23e+01</td><td class="text-right text-on-surface-variant text-xs">1.34e-01</td>
+              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">3%</span></td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
+            </tr>
+            <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+              <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
+              <td class="px-3 py-2 text-on-surface text-xs">Schwefel</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
+              <td class="text-right text-on-surface-variant text-xs">3.95e+00</td><td class="text-right text-on-surface-variant text-xs">3.82e-05</td>
+              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">97%</span></td>
+              <td class="text-right font-bold text-secondary text-xs">3 217</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Griewank</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">1.63e-02</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">0.00e+00</td>
-              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">50%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">1.69e-02</td><td class="text-right text-on-surface-variant text-xs">0.00e+00</td>
+              <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">47%</span></td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Griewank</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">1.85e-03</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">2.22e-16</td>
+              <td class="text-right font-bold text-secondary text-xs">1.85e-03</td><td class="text-right font-bold text-secondary text-xs">2.22e-16</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Griewank</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">6.25e-03</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">0.00e+00</td>
+              <td class="text-right text-on-surface-variant text-xs">6.25e-03</td><td class="text-right text-on-surface-variant text-xs">0.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">93%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">2 320</td>
+              <td class="text-right font-bold text-secondary text-xs">2 320</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Griewank</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">5.94e-02</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">9.86e-03</td>
+              <td class="text-right text-on-surface-variant text-xs">5.94e-02</td><td class="text-right text-on-surface-variant text-xs">9.86e-03</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">7%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Griewank</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">1.35e-02</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">8.59e-09</td>
+              <td class="text-right text-on-surface-variant text-xs">1.35e-02</td><td class="text-right text-on-surface-variant text-xs">8.59e-09</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">43%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Griewank</td><td class="px-3 py-2 text-on-surface-variant text-xs">3D</td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">6.74e-03</td><td class="px-3 py-2 text-right text-on-surface-variant text-xs">0.00e+00</td>
+              <td class="text-right text-on-surface-variant text-xs">6.74e-03</td><td class="text-right text-on-surface-variant text-xs">0.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">93%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">6 223</td>
+              <td class="text-right font-bold text-secondary text-xs">6 223</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Goldstein-Price</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">3.0000</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">3.0000</td>
+              <td class="text-right font-bold text-secondary text-xs">3.00e+00</td><td class="text-right font-bold text-secondary text-xs">3.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Goldstein-Price</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">3.0000</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">3.0000</td>
+              <td class="text-right font-bold text-secondary text-xs">3.00e+00</td><td class="text-right font-bold text-secondary text-xs">3.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Goldstein-Price</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">3.0000</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">3.0000</td>
+              <td class="text-right font-bold text-secondary text-xs">3.00e+00</td><td class="text-right font-bold text-secondary text-xs">3.00e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">966</td>
+              <td class="text-right font-bold text-secondary text-xs">966</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-primary text-on-primary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">EA</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Camel 6-hump</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">-1.0316</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">-1.0316</td>
+              <td class="text-right font-bold text-secondary text-xs">-1.03e+00</td><td class="text-right font-bold text-secondary text-xs">-1.03e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">50 100</td>
+              <td class="text-right text-on-surface-variant text-xs">50 100</td>
             </tr>
             <tr class="hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-tertiary text-on-tertiary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">PSO</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Camel 6-hump</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">-1.0316</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">-1.0316</td>
+              <td class="text-right font-bold text-secondary text-xs">-1.03e+00</td><td class="text-right font-bold text-secondary text-xs">-1.03e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right text-on-surface-variant text-xs">25 000</td>
+              <td class="text-right text-on-surface-variant text-xs">25 000</td>
             </tr>
             <tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
               <td class="px-3 py-2"><span class="bg-secondary text-on-secondary text-label-caps font-label-caps px-2 py-0.5 uppercase tracking-wider text-xs">DE</span></td>
               <td class="px-3 py-2 text-on-surface text-xs">Camel 6-hump</td><td class="px-3 py-2 text-on-surface-variant text-xs">2D</td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">-1.0316</td><td class="px-3 py-2 text-right font-bold text-secondary text-xs">-1.0316</td>
+              <td class="text-right font-bold text-secondary text-xs">-1.03e+00</td><td class="text-right font-bold text-secondary text-xs">-1.03e+00</td>
               <td class="px-3 py-2 text-center text-xs"><span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-label-caps font-label-caps uppercase tracking-wider">100%</span></td>
-              <td class="px-3 py-2 text-right font-bold text-secondary text-xs">869</td>
+              <td class="text-right font-bold text-secondary text-xs">859</td>
             </tr>
           </tbody>
         </table>
@@ -623,8 +648,8 @@ tailwind.config = {
 
     <!-- warning callout -->
     <div class="border-l-4 border-tertiary bg-surface-container-low px-5 py-4 mt-gutter fade-up">
-      <span class="text-label-caps font-label-caps text-tertiary uppercase tracking-wider block mb-1">Nota metodologica &mdash; EA y Schwefel</span>
-      <p class="text-caption font-caption text-on-surface-variant">El operador <code class="bg-surface-container px-1 font-mono text-xs">mutGaussian</code> de DEAP no restringe los individuos al dominio $[-500,500]^n$. Fuera del dominio, Schwefel devuelve valores muy negativos. Los resultados de EA en Schwefel reflejan exploracion fuera del dominio, no convergencia al minimo global real en $x^*\approx420.97$.</p>
+      <span class="text-label-caps font-label-caps text-tertiary uppercase tracking-wider block mb-1">Nota metodologica &mdash; EA y dominios</span>
+      <p class="text-caption font-caption text-on-surface-variant">Los operadores <code class="bg-surface-container px-1 font-mono text-xs">cxBlend</code> y <code class="bg-surface-container px-1 font-mono text-xs">mutGaussian</code> de DEAP no restringen los individuos al dominio. Se anade un decorador de recorte por dimension (<code class="bg-surface-container px-1 font-mono text-xs">checkBounds</code>) tras cruce y mutacion para mantener la busqueda dentro de cada caja (p. ej. $[-500,500]^n$ en Schwefel). La tasa de exito mide la distancia al optimo global conocido, $|f-f^*|<\mathrm{tol}$, no un umbral absoluto. Asi, los valores de EA reflejan convergencia real: Schwefel sigue siendo enganosa (exito 80% en 2D, 37% en 3D).</p>
     </div>
   </section>
 
@@ -724,14 +749,14 @@ tailwind.config = {
     <div class="border-2 border-outline-variant mb-gutter fade-up cursor-zoom-in overflow-hidden" onclick="openLightbox(this.querySelector('img'))">
       <img src="assets/figures/mejor_ruta_comparativa.png" alt="Mejor ruta ACO vs GA sobre Francia" class="w-full object-cover hover:opacity-95 transition-opacity"/>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant flex items-center justify-between">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 7 &mdash; Mejor ruta ACO (3 285 EUR) vs GA (4 092 EUR) sobre las 96 prefecturas. ACO recorre el perimetro antes del interior: ruta geograficamente mas coherente con menos cruces.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 8 &mdash; Mejor ruta ACO (3 285 EUR) vs GA (4 092 EUR) sobre las 96 prefecturas. ACO recorre el perimetro antes del interior: ruta geograficamente mas coherente con menos cruces.</span>
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
       </div>
     </div>
     <div class="border-2 border-outline-variant fade-up cursor-zoom-in overflow-hidden" onclick="openLightbox(this.querySelector('img'))">
       <img src="assets/figures/convergencia_aco_ga.png" alt="Convergencia ACO vs GA" class="w-full object-cover hover:opacity-95 transition-opacity"/>
       <div class="bg-surface-container px-4 py-3 border-t border-outline-variant flex items-center justify-between">
-        <span class="text-caption font-caption text-on-surface-variant">Fig. 8 &mdash; Curvas de convergencia. ACO converge suave y monotonicamente; GA muestra saltos abruptos del OX crossover. ACO ~26% mas economico en promedio.</span>
+        <span class="text-caption font-caption text-on-surface-variant">Fig. 9 &mdash; Curvas de convergencia. ACO converge suave y monotonicamente; GA muestra saltos abruptos del OX crossover. ACO ~26% mas economico en promedio.</span>
         <span class="material-symbols-outlined text-on-surface-variant text-base ml-4">zoom_in</span>
       </div>
     </div>
@@ -801,7 +826,7 @@ tailwind.config = {
           <ol class="text-body-md font-body-md text-on-surface-variant space-y-2 list-decimal list-inside">
             <li>Distancias haversine &ne; red vial real (factor ~1.18 en Francia)</li>
             <li>Solo 2D y 3D &mdash; maldicion de la dimensionalidad</li>
-            <li>EA en Schwefel explora fuera del dominio (sin clamping en DEAP)</li>
+            <li>EA y PSO degradan en 3D (valle de Rosenbrock, deceptividad de Schwefel)</li>
             <li>Sin pruebas estadisticas formales (Wilcoxon, Kruskal-Wallis)</li>
             <li>Hiperparametros de la literatura, sin sintonizacion bayesiana</li>
           </ol>
@@ -883,14 +908,19 @@ tailwind.config = {
 cd optimizacion-metaheuristicas
 pip install -r requirements.txt
 
-# Experimentos heuristicos (~20 min)
+# Parte 1 — heuristicos EA/PSO/DE (~20 min)
 python scripts/heuristicos.py
 
-# TSP Francia (~15 min)
+# Parte 1 — histogramas del descenso por gradiente
+python scripts/histogramas_gd.py
+
+# Parte 2 — TSP Francia, ACO + GA (~15 min)
 python scripts/tsp_france.py
 
-# Reporte Word
-python scripts/generar_reporte_word.py</code></pre>
+# Figuras del sitio y reporte HTML
+python scripts/figuras_comparativa.py
+python scripts/sync_site_data.py
+python scripts/build_report_html.py</code></pre>
       </div>
       <div class="bg-surface-container-lowest border-2 border-outline-variant p-5">
         <span class="block text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider mb-3">Dependencias</span>
@@ -899,9 +929,9 @@ scipy
 matplotlib
 deap          # algoritmos evolutivos
 pyswarms      # PSO
-python-docx   # reporte Word
+markdown      # reporte HTML
 pandas</code></pre>
-        <a href="https://docs.google.com/document/d/19gy-O2RrDxd3inqp3OrptPM4vlhL5WYO6f_5k5wKmcU/edit?tab=t.0"
+        <a href="reporte.html"
            class="mt-4 flex items-center justify-center bg-primary text-on-primary text-label-caps font-label-caps px-4 py-3 uppercase tracking-wider hover:opacity-90 transition-opacity gap-2" target="_blank">
           <span class="material-symbols-outlined text-base">open_in_new</span> Ver reporte
         </a>
@@ -926,7 +956,7 @@ pandas</code></pre>
           <a href="https://github.com/AndresGuido9820/optimizacion-metaheuristicas" class="text-primary-fixed hover:opacity-80 transition-opacity text-label-caps font-label-caps uppercase tracking-wider flex items-center gap-1" target="_blank">
             <span class="material-symbols-outlined text-base">code</span> GitHub
           </a>
-          <a href="https://docs.google.com/document/d/19gy-O2RrDxd3inqp3OrptPM4vlhL5WYO6f_5k5wKmcU/edit?tab=t.0" class="text-primary-fixed hover:opacity-80 transition-opacity text-label-caps font-label-caps uppercase tracking-wider flex items-center gap-1" target="_blank">
+          <a href="reporte.html" class="text-primary-fixed hover:opacity-80 transition-opacity text-label-caps font-label-caps uppercase tracking-wider flex items-center gap-1" target="_blank">
             <span class="material-symbols-outlined text-base">description</span> Reporte
           </a>
           <a href="#inicio" class="text-primary-fixed hover:opacity-80 transition-opacity text-label-caps font-label-caps uppercase tracking-wider flex items-center gap-1">
@@ -974,16 +1004,16 @@ sections.forEach(s => navObs.observe(s));
 
 /* Progress bars */
 const pbData = [
-  { label:'Rosenbrock 2D',      ea:13,  pso:100, de:100 },
-  { label:'Rosenbrock 3D',      ea:0,   pso:10,  de:100 },
-  { label:'Rastrigin 2D',       ea:100, pso:100, de:100 },
-  { label:'Rastrigin 3D',       ea:100, pso:100, de:100 },
-  { label:'Schwefel 2D',        ea:100, pso:100, de:83  },
-  { label:'Schwefel 3D',        ea:100, pso:30,  de:97  },
-  { label:'Griewank 2D',        ea:50,  pso:100, de:93  },
-  { label:'Griewank 3D',        ea:7,   pso:43,  de:93  },
+  { label:'Rosenbrock 2D', ea:13, pso:100, de:100 },
+  { label:'Rosenbrock 3D', ea:0, pso:10, de:100 },
+  { label:'Rastrigin 2D', ea:100, pso:100, de:100 },
+  { label:'Rastrigin 3D', ea:100, pso:100, de:93 },
+  { label:'Schwefel 2D', ea:80, pso:97, de:83 },
+  { label:'Schwefel 3D', ea:37, pso:3, de:97 },
+  { label:'Griewank 2D', ea:47, pso:100, de:93 },
+  { label:'Griewank 3D', ea:7, pso:43, de:93 },
   { label:'Goldstein-Price 2D', ea:100, pso:100, de:100 },
-  { label:'Camel 6-hump 2D',    ea:100, pso:100, de:100 },
+  { label:'Camel 6-hump 2D', ea:100, pso:100, de:100 },
 ];
 const cont = document.getElementById('pbar-container');
 pbData.forEach(d => {
