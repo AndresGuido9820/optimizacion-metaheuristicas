@@ -21,25 +21,51 @@ N_RUNS   = 30
 A        = 10   # parametro de Rastrigin
 
 # Dominios por funcion: usados tanto para GD como para heuristicos
-BOUNDS_ND = {   # funciones validas en 2D y 3D
+BOUNDS_ND = {   # funciones validas en 2D y 3D (dominio simetrico [lo,hi]^n)
     'Rosenbrock':  (-5.0,   5.0),
     'Rastrigin':   (-5.0,   5.0),
     'Schwefel':    (-500.0, 500.0),
     'Griewank':    (-600.0, 600.0),
 }
-BOUNDS_2D = {   # funciones exclusivamente 2D
+BOUNDS_2D = {   # funciones exclusivamente 2D (caja simetrica por defecto)
     'Goldstein-Price': (-2.0, 2.0),
-    'Camel 6-hump':    (-3.0, 3.0),  # se usa x1; x2 tiene dominio [-2,2] (ver nota abajo)
+    'Camel 6-hump':    (-3.0, 3.0),
 }
 
-# Umbral de exito por funcion
-THRESH = {
-    'Rosenbrock':      1e-4,
-    'Rastrigin':       1.0,
-    'Schwefel':        10.0,
-    'Griewank':        0.01,
-    'Goldstein-Price': 3.5,
-    'Camel 6-hump':    -1.0,
+# Camel 6-hump tiene dominios distintos por variable: x1 in [-3,3], x2 in [-2,2].
+BOUNDS_PERDIM = {
+    'Camel 6-hump': [(-3.0, 3.0), (-2.0, 2.0)],
+}
+
+
+def get_bounds(fname, ndim):
+    """Lista de pares (lo, hi) de longitud ndim para la funcion dada."""
+    if fname in BOUNDS_PERDIM:
+        return list(BOUNDS_PERDIM[fname])
+    lo, hi = BOUNDS_ND.get(fname, BOUNDS_2D.get(fname))
+    return [(lo, hi)] * ndim
+
+
+# Valor minimo global conocido de cada funcion (para medir la tasa de exito
+# como distancia al optimo |f - f_opt| < TOL, no como umbral absoluto).
+F_OPT = {
+    'Rosenbrock':       0.0,
+    'Rastrigin':        0.0,
+    'Schwefel':         0.0,       # con la constante 418.9829*n el minimo es ~0
+    'Griewank':         0.0,
+    'Goldstein-Price':  3.0,
+    'Camel 6-hump':    -1.0316284535,
+}
+
+# Tolerancia de exito por funcion (distancia al optimo global). Valores fijados
+# a priori segun la escala y dificultad de cada paisaje, no ajustados a posteriori.
+TOL = {
+    'Rosenbrock':      1e-4,   # valle suave: se exige convergencia fina
+    'Rastrigin':       1e-1,   # multimodal: basta caer en el pozo global
+    'Schwefel':        1.0,    # tolerancia amplia por la gran escala del dominio
+    'Griewank':        1e-2,
+    'Goldstein-Price': 1e-2,
+    'Camel 6-hump':    1e-2,
 }
 
 # EA
@@ -110,21 +136,47 @@ FUNCIONES = {**FUNCIONES_ND, **FUNCIONES_2D}
 
 
 # ── EA (DEAP) ────────────────────────────────────────────────────────────────
+def _check_bounds(bounds):
+    """Decorador DEAP que recorta cada hijo a la caja [lo,hi] por dimension.
+
+    cxBlend y mutGaussian pueden generar valores fuera del dominio; sin este
+    recorte los individuos divergen (p. ej. Schwefel -> f ~ -1e9, fuera de
+    [-500,500]). El recorte garantiza que la busqueda permanece en el dominio.
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            offspring = func(*args, **kwargs)
+            for child in offspring:
+                for i, (lo, hi) in enumerate(bounds):
+                    if child[i] < lo:
+                        child[i] = lo
+                    elif child[i] > hi:
+                        child[i] = hi
+            return offspring
+        return wrapper
+    return decorator
+
+
 def _init_ea_toolbox(f, ndim, bounds):
     import random
+    from functools import partial
     for attr in ('FitnessMin', 'Individual'):
         if hasattr(creator, attr):
             delattr(creator, attr)
     creator.create('FitnessMin', base.Fitness, weights=(-1.0,))
     creator.create('Individual', list, fitness=creator.FitnessMin)
     tb = base.Toolbox()
-    tb.register('attr',       random.uniform, bounds[0], bounds[1])
-    tb.register('individual', tools.initRepeat, creator.Individual, tb.attr, n=ndim)
+    # Inicializacion por dimension (respeta dominios distintos por variable)
+    attr_gens = [partial(random.uniform, lo, hi) for (lo, hi) in bounds]
+    tb.register('individual', tools.initCycle, creator.Individual, attr_gens, n=1)
     tb.register('population', tools.initRepeat, list, tb.individual)
     tb.register('evaluate',   lambda ind: (f(np.array(ind)),))
     tb.register('mate',       tools.cxBlend, alpha=0.5)
     tb.register('mutate',     tools.mutGaussian, mu=0, sigma=0.5, indpb=0.2)
     tb.register('select',     tools.selTournament, tournsize=3)
+    # Recorte al dominio tras cruce y mutacion (corrige la divergencia del EA)
+    tb.decorate('mate',   _check_bounds(bounds))
+    tb.decorate('mutate', _check_bounds(bounds))
     return tb
 
 
@@ -133,7 +185,7 @@ def run_ea(fname, ndim, seed):
     np.random.seed(seed)
     random.seed(seed)
     f      = FUNCIONES[fname]
-    bounds = BOUNDS_ND.get(fname, BOUNDS_2D.get(fname))
+    bounds = get_bounds(fname, ndim)
     tb     = _init_ea_toolbox(f, ndim, bounds)
     hof    = tools.HallOfFame(1)
     algorithms.eaSimple(
@@ -147,13 +199,13 @@ def run_ea(fname, ndim, seed):
 # ── PSO (pyswarms) ───────────────────────────────────────────────────────────
 def run_pso(fname, ndim, seed):
     np.random.seed(seed)
-    f      = FUNCIONES[fname]
-    bounds_val = BOUNDS_ND.get(fname, BOUNDS_2D.get(fname))
+    f  = FUNCIONES[fname]
+    bb = get_bounds(fname, ndim)
 
     def batch_f(X):
         return np.array([f(X[i]) for i in range(X.shape[0])])
 
-    bounds = (np.full(ndim, bounds_val[0]), np.full(ndim, bounds_val[1]))
+    bounds = (np.array([lo for lo, _ in bb]), np.array([hi for _, hi in bb]))
     opt    = ps.single.GlobalBestPSO(n_particles=PSO_N, dimensions=ndim,
                                       options=PSO_OPTS, bounds=bounds)
     cost, _ = opt.optimize(batch_f, iters=PSO_ITERS, verbose=False)
@@ -162,9 +214,9 @@ def run_pso(fname, ndim, seed):
 
 # ── Evolución Diferencial (scipy) ────────────────────────────────────────────
 def run_de(fname, ndim, seed):
-    f          = FUNCIONES[fname]
-    bounds_val = BOUNDS_ND.get(fname, BOUNDS_2D.get(fname))
-    result     = differential_evolution(f, [bounds_val] * ndim, seed=seed, **DE_CONF)
+    f      = FUNCIONES[fname]
+    bounds = get_bounds(fname, ndim)
+    result = differential_evolution(f, bounds, seed=seed, **DE_CONF)
     return {'f_final': float(result.fun), 'n_evals': int(result.nfev)}
 
 
@@ -189,7 +241,7 @@ def correr_experimentos():
                     f_vals.append(res['f_final'])
                     evals.append(res['n_evals'])
 
-                tasa = np.mean(np.array(f_vals) < THRESH[fname])
+                tasa = np.mean(np.abs(np.array(f_vals) - F_OPT[fname]) < TOL[fname])
                 print(
                     f'{metodo:4s} | {fname:18s} {ndim}D | '
                     f'media={np.mean(f_vals):.3e}  std={np.std(f_vals):.3e}  '
