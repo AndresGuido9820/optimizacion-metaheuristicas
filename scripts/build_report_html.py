@@ -42,7 +42,7 @@ MathJax = {
   .topbar a { color:var(--accent); text-decoration:none; font-weight:600; }
   .topbar a:hover { text-decoration:underline; }
   h1 { font-size:1.9rem; line-height:1.25; margin:1.2em 0 .5em; }
-  h2 { font-size:1.45rem; margin:1.6em 0 .5em; padding-bottom:.2em; border-bottom:2px solid var(--line); }
+  h2 { font-size:1.45rem; margin:1.6em 0 .5em; }
   h3 { font-size:1.2rem; margin:1.3em 0 .4em; }
   h4 { font-size:1.05rem; margin:1.1em 0 .3em; color:var(--muted); }
   p, li { font-size:1rem; }
