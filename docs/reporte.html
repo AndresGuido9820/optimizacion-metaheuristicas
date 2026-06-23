@@ -74,7 +74,7 @@ MathJax = {
 <hr />
 <h2 id="2-marco-teorico">2. Marco Teórico</h2>
 <h3 id="21-funciones-de-prueba">2.1 Funciones de prueba</h3>
-<p>Las funciones de prueba son herramientas estándar para evaluar algoritmos de optimización en condiciones controladas y reproducibles. En este trabajo se utilizan seis funciones de la literatura:</p>
+<p>Las funciones de prueba son herramientas estándar para evaluar algoritmos de optimización en condiciones controladas y reproducibles. Las seis funciones empleadas, con sus dominios y óptimos globales, se tomaron de la <em>Virtual Library of Simulation Experiments</em> (Surjanovic &amp; Bingham, 2013), referencia ampliamente usada para <em>benchmarking</em> en optimización:</p>
 <h4 id="211-funcion-de-rosenbrock">2.1.1 Función de Rosenbrock</h4>
 <p>Propuesta por Rosenbrock (1960), es una función unimodal no convexa definida como:</p>
 <p>$$f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[ 100(x_{i+1} - x_i^2)^2 + (1 - x_i)^2 \right]$$</p>
@@ -206,7 +206,7 @@ MathJax = {
 <p><strong>Nota sobre dominio:</strong> Goldstein-Price y Camel 6-hump son exclusivamente 2D y tienen dominios específicos ($[-2,2]^2$ y $x_1\!\in\![-3,3],x_2\!\in\![-2,2]$). Para el experimento estadístico de GD (n repeticiones) solo se usan las 4 funciones válidas en $[-5,5]^n$: Rosenbrock, Rastrigin, Schwefel y Griewank.</p>
 </blockquote>
 <h3 id="33-parte-2-tsp-francia">3.3 Parte 2: TSP Francia</h3>
-<p>Los datos geográficos de las <strong>96 prefecturas</strong> de los departamentos de la Francia metropolitana (latitud y longitud en grados decimales WGS84) se compilaron de fuentes cartográficas oficiales francesas. La matriz de distancias $96 \times 96$ se construye con la fórmula de Haversine y se reutiliza en todos los experimentos.</p>
+<p>Los datos geográficos de las <strong>96 prefecturas</strong> de los departamentos de la Francia metropolitana —latitud y longitud en grados decimales (WGS84)— se compilaron de coordenadas públicas de dominio común (GeoNames, 2024) y se incluyen directamente en el código (<code>scripts/tsp_france.py</code>). La matriz de distancias $96 \times 96$ se construye con la fórmula de Haversine y se reutiliza en todos los experimentos.</p>
 <p>Los experimentos de Parte 2 cubren $2 \text{ métodos} \times 30 \text{ corridas} = 60$ experimentos. La mejor ruta encontrada por cada método (sobre las 30 corridas) se visualiza sobre el espacio geográfico real de las prefecturas. El mapa cubre desde Dunkerque (norte) hasta Ajaccio, Córcega (sur).</p>
 <hr />
 <h2 id="4-resultados">4. Resultados</h2>
@@ -827,17 +827,16 @@ MathJax = {
 <p>Applegate, D. L., Bixby, R. E., Chvátal, V., &amp; Cook, W. J. (2006). <em>The traveling salesman problem: A computational study</em>. Princeton University Press.</p>
 <p>Blum, C., &amp; Roli, A. (2003). Metaheuristics in combinatorial optimization: Overview and conceptual comparison. <em>ACM Computing Surveys</em>, <em>35</em>(3), 268–308. https://doi.org/10.1145/937503.937505</p>
 <p>Clerc, M., &amp; Kennedy, J. (2002). The particle swarm — Explosion, stability, and convergence in a multidimensional complex space. <em>IEEE Transactions on Evolutionary Computation</em>, <em>6</em>(1), 58–73. https://doi.org/10.1109/4235.985692</p>
+<p>Cook, W. J. (2012). <em>In pursuit of the traveling salesman: Mathematics at the limits of computation</em>. Princeton University Press.</p>
 <p>Davis, L. (1985). Applying adaptive algorithms to epistatic domains. En <em>Proceedings of the 9th International Joint Conference on Artificial Intelligence</em> (pp. 162–164). IJCAI.</p>
 <p>Dorigo, M. (1992). <em>Optimization, learning and natural algorithms</em> [Tesis doctoral]. Politecnico di Milano.</p>
 <p>Dorigo, M., &amp; Gambardella, L. M. (1997). Ant colony system: A cooperative learning approach to the traveling salesman problem. <em>IEEE Transactions on Evolutionary Computation</em>, <em>1</em>(1), 53–66. https://doi.org/10.1109/4235.585892</p>
 <p>Eshelman, L. J., &amp; Schaffer, J. D. (1993). Real-coded genetic algorithms and interval-schemata. <em>Foundations of Genetic Algorithms</em>, <em>2</em>, 187–202. https://doi.org/10.1016/B978-0-08-094832-4.50018-0</p>
 <p>Fortin, F.-A., De Rainville, F.-M., Gardner, M.-A., Parizeau, M., &amp; Gagné, C. (2012). DEAP: Evolutionary algorithms made easy. <em>Journal of Machine Learning Research</em>, <em>13</em>, 2171–2175.</p>
+<p>GeoNames. (2024). <em>GeoNames geographical database</em> [Conjunto de datos]. https://www.geonames.org/</p>
 <p>Goldberg, D. E. (1989). <em>Genetic algorithms in search, optimization, and machine learning</em>. Addison-Wesley.</p>
-<p>Helsgott, L. K., &amp; Cook, W. (2012). <em>In pursuit of the traveling salesman: Mathematics at the limits of computation</em>. Princeton University Press.</p>
-<p>Holland, J. H. (1975). <em>Adaptation in natural and artificial systems</em>. University of Michigan Press.</p>
 <p>Griewank, A. O. (1981). Generalized descent for global optimization. <em>Journal of Optimization Theory and Applications</em>, <em>34</em>(1), 11–39. https://doi.org/10.1007/BF00933356</p>
-<p>Institut Géographique National. (2024). <em>Référentiel géographique français — Coordonnées des chefs-lieux de département</em>. IGN France. https://www.ign.fr/</p>
-<p>Schwefel, H.-P. (1981). <em>Numerical optimization of computer models</em>. Wiley.</p>
+<p>Holland, J. H. (1975). <em>Adaptation in natural and artificial systems</em>. University of Michigan Press.</p>
 <p>Kennedy, J., &amp; Eberhart, R. (1995). Particle swarm optimization. En <em>Proceedings of the IEEE International Conference on Neural Networks</em> (Vol. 4, pp. 1942–1948). IEEE. https://doi.org/10.1109/ICNN.1995.488968</p>
 <p>Miranda, L. J. V. (2018). PySwarms: A research toolkit for particle swarm optimization in Python. <em>Journal of Open Source Software</em>, <em>3</em>(21), 433. https://doi.org/10.21105/joss.00433</p>
 <p>Montgomery, D. C., &amp; Runger, G. C. (2018). <em>Applied statistics and probability for engineers</em> (7.ª ed.). Wiley.</p>
@@ -845,7 +844,9 @@ MathJax = {
 <p>Nocedal, J., &amp; Wright, S. J. (2006). <em>Numerical optimization</em> (2.ª ed.). Springer.</p>
 <p>Rastrigin, L. A. (1974). <em>Systems of extremal control</em>. Nauka.</p>
 <p>Rosenbrock, H. H. (1960). An automatic method for finding the greatest or least value of a function. <em>The Computer Journal</em>, <em>3</em>(3), 175–184. https://doi.org/10.1093/comjnl/3.3.175</p>
+<p>Schwefel, H.-P. (1981). <em>Numerical optimization of computer models</em>. Wiley.</p>
 <p>Storn, R., &amp; Price, K. (1997). Differential evolution — A simple and efficient heuristic for global optimization over continuous spaces. <em>Journal of Global Optimization</em>, <em>11</em>(4), 341–359. https://doi.org/10.1023/A:1008202821328</p>
+<p>Surjanovic, S., &amp; Bingham, D. (2013). <em>Virtual Library of Simulation Experiments: Test Functions and Datasets</em> [Conjunto de funciones de prueba]. Simon Fraser University. https://www.sfu.ca/~ssurjano/</p>
 <p>Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., Burovski, E., Peterson, P., Weckesser, W., Bright, J., van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J., Mayorov, N., Nelson, A. R. J., Jones, E., Kern, R., Larson, E., … SciPy 1.0 Contributors. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. <em>Nature Methods</em>, <em>17</em>, 261–272. https://doi.org/10.1038/s41592-019-0686-2</p>
 </div>
 </body>

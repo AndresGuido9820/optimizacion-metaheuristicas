@@ -37,7 +37,7 @@ El trabajo fue implementado enteramente en Python, los notebooks están disponib
 
 ### 2.1 Funciones de prueba
 
-Las funciones de prueba son herramientas estándar para evaluar algoritmos de optimización en condiciones controladas y reproducibles. En este trabajo se utilizan seis funciones de la literatura:
+Las funciones de prueba son herramientas estándar para evaluar algoritmos de optimización en condiciones controladas y reproducibles. Las seis funciones empleadas, con sus dominios y óptimos globales, se tomaron de la *Virtual Library of Simulation Experiments* (Surjanovic & Bingham, 2013), referencia ampliamente usada para *benchmarking* en optimización:
 
 #### 2.1.1 Función de Rosenbrock
 
@@ -209,7 +209,7 @@ Los experimentos de la Parte 1 cubren $6 \text{ funciones} \times 2 \text{ dimen
 
 ### 3.3 Parte 2: TSP Francia
 
-Los datos geográficos de las **96 prefecturas** de los departamentos de la Francia metropolitana (latitud y longitud en grados decimales WGS84) se compilaron de fuentes cartográficas oficiales francesas. La matriz de distancias $96 \times 96$ se construye con la fórmula de Haversine y se reutiliza en todos los experimentos.
+Los datos geográficos de las **96 prefecturas** de los departamentos de la Francia metropolitana —latitud y longitud en grados decimales (WGS84)— se compilaron de coordenadas públicas de dominio común (GeoNames, 2024) y se incluyen directamente en el código (`scripts/tsp_france.py`). La matriz de distancias $96 \times 96$ se construye con la fórmula de Haversine y se reutiliza en todos los experimentos.
 
 Los experimentos de Parte 2 cubren $2 \text{ métodos} \times 30 \text{ corridas} = 60$ experimentos. La mejor ruta encontrada por cada método (sobre las 30 corridas) se visualiza sobre el espacio geográfico real de las prefecturas. El mapa cubre desde Dunkerque (norte) hasta Ajaccio, Córcega (sur).
 
@@ -475,6 +475,8 @@ Blum, C., & Roli, A. (2003). Metaheuristics in combinatorial optimization: Overv
 
 Clerc, M., & Kennedy, J. (2002). The particle swarm — Explosion, stability, and convergence in a multidimensional complex space. *IEEE Transactions on Evolutionary Computation*, *6*(1), 58–73. https://doi.org/10.1109/4235.985692
 
+Cook, W. J. (2012). *In pursuit of the traveling salesman: Mathematics at the limits of computation*. Princeton University Press.
+
 Davis, L. (1985). Applying adaptive algorithms to epistatic domains. En *Proceedings of the 9th International Joint Conference on Artificial Intelligence* (pp. 162–164). IJCAI.
 
 Dorigo, M. (1992). *Optimization, learning and natural algorithms* [Tesis doctoral]. Politecnico di Milano.
@@ -485,17 +487,13 @@ Eshelman, L. J., & Schaffer, J. D. (1993). Real-coded genetic algorithms and int
 
 Fortin, F.-A., De Rainville, F.-M., Gardner, M.-A., Parizeau, M., & Gagné, C. (2012). DEAP: Evolutionary algorithms made easy. *Journal of Machine Learning Research*, *13*, 2171–2175.
 
+GeoNames. (2024). *GeoNames geographical database* [Conjunto de datos]. https://www.geonames.org/
+
 Goldberg, D. E. (1989). *Genetic algorithms in search, optimization, and machine learning*. Addison-Wesley.
-
-Helsgott, L. K., & Cook, W. (2012). *In pursuit of the traveling salesman: Mathematics at the limits of computation*. Princeton University Press.
-
-Holland, J. H. (1975). *Adaptation in natural and artificial systems*. University of Michigan Press.
 
 Griewank, A. O. (1981). Generalized descent for global optimization. *Journal of Optimization Theory and Applications*, *34*(1), 11–39. https://doi.org/10.1007/BF00933356
 
-Institut Géographique National. (2024). *Référentiel géographique français — Coordonnées des chefs-lieux de département*. IGN France. https://www.ign.fr/
-
-Schwefel, H.-P. (1981). *Numerical optimization of computer models*. Wiley.
+Holland, J. H. (1975). *Adaptation in natural and artificial systems*. University of Michigan Press.
 
 Kennedy, J., & Eberhart, R. (1995). Particle swarm optimization. En *Proceedings of the IEEE International Conference on Neural Networks* (Vol. 4, pp. 1942–1948). IEEE. https://doi.org/10.1109/ICNN.1995.488968
 
@@ -511,6 +509,10 @@ Rastrigin, L. A. (1974). *Systems of extremal control*. Nauka.
 
 Rosenbrock, H. H. (1960). An automatic method for finding the greatest or least value of a function. *The Computer Journal*, *3*(3), 175–184. https://doi.org/10.1093/comjnl/3.3.175
 
+Schwefel, H.-P. (1981). *Numerical optimization of computer models*. Wiley.
+
 Storn, R., & Price, K. (1997). Differential evolution — A simple and efficient heuristic for global optimization over continuous spaces. *Journal of Global Optimization*, *11*(4), 341–359. https://doi.org/10.1023/A:1008202821328
+
+Surjanovic, S., & Bingham, D. (2013). *Virtual Library of Simulation Experiments: Test Functions and Datasets* [Conjunto de funciones de prueba]. Simon Fraser University. https://www.sfu.ca/~ssurjano/
 
 Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., Burovski, E., Peterson, P., Weckesser, W., Bright, J., van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J., Mayorov, N., Nelson, A. R. J., Jones, E., Kern, R., Larson, E., … SciPy 1.0 Contributors. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. *Nature Methods*, *17*, 261–272. https://doi.org/10.1038/s41592-019-0686-2
