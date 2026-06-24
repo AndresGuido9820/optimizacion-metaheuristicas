@@ -73,6 +73,24 @@ Parte 2 — TSP combinatorio (Francia · 96 prefecturas)
 
 ---
 
+## Resultados principales
+
+**Parte 1 — funciones continuas (30 corridas por configuración):**
+- **DE** es el más robusto y eficiente: 100 % de éxito en Rosenbrock y Rastrigin (2D y 3D) con ~1 000–11 000 evaluaciones, frente a las 25 000 fijas de PSO y 50 100 de EA.
+- **No hay ganador universal** (*No Free Lunch*): en Schwefel 2D y Griewank 2D el PSO iguala o supera a DE.
+- El **descenso por gradiente** se atasca en las funciones multimodales (queda lejos del óptimo) y en Rosenbrock alcanza el óptimo pero con el mayor costo (~28 000–33 000 evaluaciones).
+
+**Parte 2 — TSP Francia (96 prefecturas, 30 corridas):**
+
+| Método | Media (EUR) | Mejor (EUR) | CV (%) | Tiempo (s) |
+|--------|:-----------:|:-----------:|:------:|:----------:|
+| **ACO** | **3 355** | **3 285** | **1.26** | 831 |
+| GA | 4 553 | 4 092 | 4.87 | 160 |
+
+ACO obtiene la mejor solución y mayor consistencia (~26 % más económico); GA es ~5× más rápido por corrida.
+
+---
+
 ## Documentación
 
 | Archivo | Descripción |
@@ -162,7 +180,10 @@ Los experimentos usan semillas fijas (0–29). `notebooks/outputs/resultados_tsp
 - Rosenbrock, H. H. (1960). An automatic method for finding the greatest or least value of a function. *The Computer Journal*, 3(3), 175–184.
 - Schwefel, H.-P. (1981). *Numerical optimization of computer models*. Wiley.
 - Griewank, A. (1981). Generalized descent for global optimization. *Journal of Optimization Theory and Applications*, 34(1), 11–39.
-- Dixon, L. C. W., & Szegö, G. P. (1978). The global optimization problem: An introduction. *Towards Global Optimization*, 2, 1–15.
+- Surjanovic, S., & Bingham, D. (2013). *Virtual Library of Simulation Experiments: Test Functions and Datasets*. Simon Fraser University. https://www.sfu.ca/~ssurjano/ — *(fuente de las funciones de prueba)*
+- GeoNames. (2024). *GeoNames geographical database*. https://www.geonames.org/ — *(fuente de las coordenadas de las 96 prefecturas)*
+
+> La bibliografía completa en normas APA está en [report/blog_post.md](report/blog_post.md) §8 y en el [reporte publicado](https://andresguido9820.github.io/optimizacion-metaheuristicas/reporte.html).
 
 ---
 
